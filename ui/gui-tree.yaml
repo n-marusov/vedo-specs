@@ -1,0 +1,428 @@
+# artifact: gui-tree
+# description: Полное дерево GUI VEDO Core — страницы, компоненты, диалоги
+# source: design/frontend.pen + code-фронтенд реализация
+
+gui:
+  standalone:
+    - page: LoginPage
+      route: /login
+      shell: false
+      layout: Карточка 720px по центру
+      children:
+        - Logo 56x56 + VEDO Core + tagline
+        - OAuthButton:
+            - VK ID
+            - Yandex ID
+            - Mail.ru
+            - Google
+            - Corporate SSO (SAML/OIDC)
+
+    - page: AuthCallbackPage
+      route: /auth/callback
+      shell: false
+      children:
+        - Spinner / Error state (обработка OIDC кода)
+
+    - page: PublicOntologyPage
+      route: /public/:id
+      shell: false
+      children:
+        - header:
+            - 'Logo + "Public Project View"'
+            - 'Badge "Read-only"'
+            - 'Share (<div> snippet to insert into HTML-page)'
+        - ClassTree (read-only, без создания)
+        - GraphVisualization (individual / property / value)
+        - PropertyPanel (read-only)
+        - footer: 'Banner "Published snapshot — edits disabled"'
+
+    - page: NotFoundPage
+      route: /:pathMatch(.*)
+      shell: false
+      children:
+        - '404 + "Go to Dashboard"'
+
+  shell:
+    header:
+      height: 56px
+      children:
+        - brand: 'Logo 28x28 design\vedo-core-logo-1.jpg (без надписи)'
+          link: Dashboard
+        - SearchInput: "Search or go to... [shortcut: /]"
+        - actions:
+            - Create:
+              popup_menu:
+                - New project
+                - New group
+              icon: Plus
+              hint: Create New...
+            - divider
+            - Merge requests: GitMerge + counter
+            - Comments: MessageSquare + counter
+            - Help: CircleHelp
+            - Theme: Sun (dark/light)
+            - Avatar: User
+              menu:
+                - User Name @login
+                - divider
+                - Set status
+                - Edit profile
+                - Preferences
+                - divider
+                - Upgrade subscription
+                - divider
+                - Sign out
+
+    sidebar:
+      width_expanded: 256px
+      width_collapsed: 56px
+      transition: "0.2s ease-in-out"
+      persist: localStorage(sidebar-collapsed)
+      header: Your work
+      items:
+        - nav:
+            - label: Home
+              icon: LayoutDashboard
+              route: /dashboard/home
+            - label: Groups
+              icon: Structure
+              route: /dashboard/groups
+            - label: Projects
+              icon: Folder
+              route: /dashboard/projects
+            - label: Merge requests
+              icon: GitMerge
+              route: /dashboard/merge_requests
+            - label: Commits
+              icon: History
+              route: /commits
+              badge: 0
+            - label: Comments
+              icon: MessageSquare
+              route: /comments
+              badge: 0
+            - label: Deployments
+              icon: cloud
+              route: /dashboard/deployments
+              badge: 0
+        - divider
+        - spacer
+        - Help: icon=Info
+        - divider
+        - Collapse toggle: icon=PanelLeftClose/PanelLeftOpen
+
+    GroupSidebar:
+      width_expanded: 256px
+      width_collapsed: 56px
+      transition: "0.2s ease-in-out"
+      persist: localStorage(sidebar-collapsed)
+      header: Group
+      items:
+        - nav:
+            - label: Group name
+              icon: group logo
+              route: /:group_name
+            - divider
+            - label: Members
+              icon: people
+              route: /:group_name/members
+              badge: 0
+            - label: Merge requests
+              icon: GitMerge
+              route: /:group_name/merge_requests
+              badge: 0
+            - label: Commits
+              icon: History
+              route: /:group_name/commits
+              badge: 0
+            - label: Comments
+              icon: MessageSquare
+              route: /:group_name/comments
+              badge: 0
+        - Settings: icon=Cog
+        - spacer
+        - Help: icon=Info
+        - divider
+        - Collapse toggle: icon=PanelLeftClose/PanelLeftOpen
+
+    ProjectSidebar:
+      width_expanded: 256px
+      width_collapsed: 56px
+      transition: "0.2s ease-in-out"
+      persist: localStorage(sidebar-collapsed)
+      header: Project
+      items:
+        - nav:
+            - label: Project name
+              icon: project logo
+              route: /:group_name/:project_name
+            - divider
+            - label: Merge requests
+              icon: GitMerge
+              route: /:group_name/:project_name/merge_requests
+              badge: 0
+            - label: Commits
+              icon: History
+              route: /:group_name/:project_name/commits
+              badge: 0
+            - label: Comments
+              icon: MessageSquare
+              route: /:group_name/:project_name/comments
+              badge: 0
+        - Settings: icon=Cog
+        - spacer
+        - Help: icon=Info
+        - divider
+        - Collapse toggle: icon=PanelLeftClose/PanelLeftOpen
+
+    pages:
+      - page: DashboardPage
+        route: /dashboard/home
+        breadcrumbs: Your work / Home
+        header:
+          - Avatar 64x64
+          - name: "Nikolay Marusov"
+          - status: "Working..."
+        widgets:
+          - card: Merge requests
+            value: 0
+            sub: "Waiting for review"
+            icon: GitMerge
+          - card: Merge requests
+            value: 0
+            sub: "Assigned to you"
+            icon: UserCheck
+          - card: Active Comments
+            value: 3
+            sub: "Awaiting your reply"
+            icon: MessageSquare
+        recent_ontologies:
+          - name: ProductOntology
+            modified: "2h ago"
+            owner: "Alice Smith"
+          - name: OrganizationOntology
+            modified: "yesterday"
+            owner: "Bob Johnson"
+          - name: CustomerOntology
+            modified: "3d ago"
+            owner: "Alice Smith"
+          - name: SupplyChainOntology
+            modified: "1w ago"
+            owner: "Bob Johnson"
+        activity:
+          - "Alice merged MR-42"
+          - "Bob pushed to main"
+          - "Anna added comment"
+          - "System validated"
+        quick_access:
+          - tab: Recently viewed
+          - tab: Merge requests
+
+      - page: GroupsPage
+        route: /dashboard/groups
+        breadcrumbs: Your work / Groups
+        header:
+          - Groups
+          - New group button
+        widgets:
+          - card: Merge requests
+            value: 0
+            sub: "Waiting for review"
+            icon: GitMerge
+          - card: Merge requests
+            value: 0
+            sub: "Assigned to you"
+            icon: UserCheck
+          - card: Active Comments
+            value: 3
+            sub: "Awaiting your reply"
+            icon: MessageSquare
+        recent_ontologies:
+          - name: ProductOntology
+            modified: "2h ago"
+            owner: "Alice Smith"
+          - name: OrganizationOntology
+            modified: "yesterday"
+            owner: "Bob Johnson"
+          - name: CustomerOntology
+            modified: "3d ago"
+            owner: "Alice Smith"
+          - name: SupplyChainOntology
+            modified: "1w ago"
+            owner: "Bob Johnson"
+        activity:
+          - "Alice merged MR-42"
+          - "Bob pushed to main"
+          - "Anna added comment"
+          - "System validated"
+        quick_access:
+          - tab: Recently viewed
+          - tab: Merge requests
+
+      - page: OntologyWorkspace
+        route: /ontology/:id/workspace
+        header: breadcrumbs
+        panes:
+          - GroupSidebar (256px):
+              - Members list (avatars + roles)
+          - splitter (8px grip)
+          - center:
+              - OntologyToolbar: breadcrumbs + Publish/Save/Undo/Redo/Validate
+              - content_row:
+                  - ClassTree (320px):
+                      - filter/search
+                      - view switcher (tree/table/graph)
+                      - tree: owl:Thing > Person, Organization, Product...
+                  - splitter
+                  - GraphVisualization:
+                      - table: Individual | Property | Value
+                  - splitter
+                  - PropertyPanel (372px):
+                      - tabs: Properties | Restrictions | Usage | Annotations | Metadata
+                      - individuals: Name | Type | Actions
+
+      - page: QueryPage
+        route: /ontology/:id/query
+        children:
+          - 'title + BadgeInfo "Read-only queries only"'
+          - context_bar: ProductOntology | main branch
+          - SPARQLQueryEditor:
+              - query_input (syntax highlighting)
+              - microphone button
+              - Run / Format buttons
+              - results_table
+          - CYPHERQueryEditor:
+              - query_input (syntax highlighting)
+              - microphone button
+              - Run / Format buttons
+              - results_table
+
+      - page: MetricsPage
+        route: /metrics
+        children:
+          - title + ChartColumn icon
+          - context_bar
+          - kpi:
+              - Classes: 42
+              - Properties: 18
+              - Individuals: 156
+              - Axioms: 890
+          - charts:
+              - Trend Overview (placeholder)
+              - Validation Distribution (placeholder)
+
+      - page: MembersPage
+        route: /ontology/:id/members
+        children:
+          - title + Users icon + Badge(4)
+          - context_bar: "Only owners can manage members"
+          - table:
+              - Nikolay Marusov   Owner      n.marusov@…
+              - Alice Smith       Maintainer a.smith@…
+              - Bob Johnson       Editor     b.johnson@…
+              - Anna Petrova      Viewer     a.petrova@…
+          - actions: Edit / Remove per row
+
+      - page: ValidationPage
+        route: /ontology/:id/validation
+        children:
+          - title + ShieldWarning icon
+          - context_bar
+          - 'PrimaryButton "Run validation"'
+          - ValidationReport:
+              - summary: 24 rules | 19 passed | 3 failed | 2 warnings
+              - table: Rule | Severity | Focus Node | Message
+
+      - page: VersioningPage
+        route: /ontology/:id/versioning/:view
+        tabs:
+          - Commits
+          - Branches
+          - Compare Revisions
+          - Tags
+          - Repository Graph
+          - Merge Requests
+        filter_row:
+          - branch selector
+          - author selector
+          - search
+        sub_views:
+          commits: CommitHistory (Author | Message | SHA | Date)
+          branches: BranchList (All/Active | Branch | Commit | Updated)
+          compare: DiffView (base/target + stats + split-diff)
+          tags: TagList (Name | Commit | Description | Actions)
+          graph: RepositoryGraph (DAG nodes/branches/tags tooltips)
+          merge_requests: placeholder
+
+  organisms:
+    - Header             # qpgfz — навбар с лого, поиском, аватаром, темой
+    - Sidebar            # W5vtj — навигация с иконками и бейджами
+    - SidebarCompact     # TJOOr — узкий сайдбар 72px (только иконки)
+    - GroupSidebar       # SItfr — групповая навигация
+    - CollapsedGroupSidebar # t3slf5 — свёрнутый GroupSidebar 64px
+    - OntologyToolbar    # cZ9F0 — тулбар онтологии
+    - OntologyMetadata   # ontM — метаданные онтологии
+    - ClassTree          # sl8av — дерево классов
+    - PropertyPanel      # c0wXES — панель свойств с вкладками
+    - GraphVisualization # RKIbA — граф/таблица individual-property-value
+    - SPARQLQueryEditor  # spqlE — редактор SPARQL
+    - MetricsDashboard   # mtrD — KPI + графики
+    - MembersPanel       # membP — таблица участников
+    - BranchList         # tTpUr — список веток
+    - CommitHistory      # Mg9Hs — история коммитов
+    - DiffView           # c86ae7 — сравнение ревизий
+    - TagList            # u0Wa7Z — управление тегами
+    - RepositoryGraph    # repoG — DAG-граф репозитория
+    - CommentsThread     # cmnt — нитка комментариев
+    - SHACLRuleBuilder   # shRB — редактор SHACL правил
+    - ValidationReport   # valR — отчёт валидации
+
+  ui_kit:
+    # 18 компонентов из ui-kit.lib.pen (B:*)
+    - Avatar             # B:ztFq7
+    - Badge              # B:Pw7LN
+    - BadgeInfo          # B:NwwhS
+    - Checkbox           # B:cN7Wo
+    - Dialog             # B:aTMES
+    - Divider            # B:AOlSf
+    - ExpandableSection  # B:JDECb
+    - GhostButton        # B:kLoW9
+    - IconButton         # B:ahk3w
+    - OAuthButton        # B:c8T4z
+    - PrimaryButton      # B:3CI7c
+    - Radio              # B:nCzv2
+    - SearchInput        # B:yA4l7
+    - Select             # B:K5sXB
+    - Spacer             # B:u0ezf
+    - Tab                # B:ck1WW
+    - TableColumn        # B:j6AS7
+    - TextInput          # B:FTaL1
+
+  dialogs:
+    # Модальные окна из dialogS (frontend.pen)
+    - Create Class
+    - Create Property
+    - Create Individual
+    - Annotation
+    - Import
+    - MFA Challenge
+    - Publish Snapshot
+
+  feature_modules:
+    ticket_system:
+      components:
+        - AttachmentUpload
+        - CategoryWizard
+        - MetadataPreview
+        - TicketComments
+        - TicketCreateModal
+        - TicketDetail
+        - TicketFilters
+        - TicketList
+
+    feedback_system:
+      components:
+        - FeedbackWidget
+        - NPSSurvey
+        - ProductDigest
+        - RoadmapPlaceholder

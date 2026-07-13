@@ -24,6 +24,15 @@
 | [US-api.classes.create-rest](US-api.classes.create-rest.md) | [UC-api.integration.integrate-through-platform-apis](use-cases.md#uc-api.integration.integrate-through-platform-apis) | P1 |
 | [US-admin.endpoints.create-bind](US-admin.endpoints.create-bind.md) | [UC-admin.system.manage-platform-configuration](use-cases.md#uc-admin.system.manage-platform-configuration) | P1 |
 | [US-admin.access.assign-role](US-admin.access.assign-role.md) | [UC-admin.access.manage-membership-and-permissions](use-cases.md#uc-admin.access.manage-membership-and-permissions) | P0 |
+| [US-editor.properties.edit-delete](US-editor.properties.edit-delete.md) | [UC-editor.properties.manage-property-lifecycle](use-cases.md#uc-editor.properties.manage-property-lifecycle) | P0 |
+| [US-editor.classes.hierarchy-drag-drop](US-editor.classes.hierarchy-drag-drop.md) | [UC-editor.classes.manage-class-lifecycle](use-cases.md#uc-editor.classes.manage-class-lifecycle) | P1 |
+| [US-browse.individuals.list-by-class](US-browse.individuals.list-by-class.md) | [UC-abox.individuals.manage-individual-lifecycle](use-cases.md#uc-abox.individuals.manage-individual-lifecycle) | P1 |
+| [US-git.branches.create-switch](US-git.branches.create-switch.md) | [UC-git.branches.manage-branch-workflow](use-cases.md#uc-git.branches.manage-branch-workflow) | P1 |
+| [US-abox.individuals.edit-property-values](US-abox.individuals.edit-property-values.md) | [UC-abox.individuals.manage-individual-lifecycle](use-cases.md#uc-abox.individuals.manage-individual-lifecycle) | P1 |
+| [US-api.ontologies.read-rest](US-api.ontologies.read-rest.md) | [UC-api.integration.integrate-through-platform-apis](use-cases.md#uc-api.integration.integrate-through-platform-apis) | P1 |
+| [US-api.sparql.execute](US-api.sparql.execute.md) | [UC-browse.search.execute-sparql-query-through-gui](use-cases.md#uc-browse.search.execute-sparql-query-through-gui) | P1 |
+| [US-api.cypher.execute](US-api.cypher.execute.md) | [UC-browse.search.execute-sparql-query-through-gui](use-cases.md#uc-browse.search.execute-sparql-query-through-gui) | P1 |
+| [US-browse.individuals.filter-by-property](US-browse.individuals.filter-by-property.md) | [UC-abox.individuals.manage-individual-lifecycle](use-cases.md#uc-abox.individuals.manage-individual-lifecycle) | P1 |
 | [US-git.branches.create-merge](US-git.branches.create-merge.md) | [UC-git.branches.manage-branch-workflow](use-cases.md#uc-git.branches.manage-branch-workflow) | P2 |
 | [US-git.commits.compare](US-git.commits.compare.md) | [UC-git.commits.compare-ontology-versions](use-cases.md#uc-git.commits.compare-ontology-versions) | P2 |
 | [US-admin.backup.daily](US-admin.backup.daily.md) | [UC-admin.backup.manage-backup-and-restore-via-cli](use-cases.md#uc-admin.backup.manage-backup-and-restore-via-cli) | P0 |

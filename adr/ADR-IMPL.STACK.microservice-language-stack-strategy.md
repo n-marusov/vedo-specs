@@ -5,14 +5,18 @@
 
 ## Контекст
 
-В VEDO Core уже зафиксированы частные ADR по языкам для части сервисов:
+В VEDO Core уже зафиксированы частные ADR по языкам для большинства сервисов:
 - `ADR-IMPL.STACK.ontology-rust-strategy`
 - `ADR-IMPL.STACK.version-control-rust-strategy`
 - `ADR-IMPL.STACK.auth-service-go-strategy`
 - `ADR-IMPL.STACK.metrics-python-strategy`
 - `ADR-IMPL.STACK.frontend-vue-strategy`
+- `ADR-IMPL.STACK.api-gateway-go-strategy`
+- `ADR-IMPL.STACK.ticket-service-go-strategy`
+- `ADR-IMPL.STACK.publisher-rust-strategy`
+- `ADR-IMPL.STACK.public-browse-api-rust-strategy`
 
-Для API Gateway, Ticket Service, Publisher Service, Public Browse API и Commenting Service язык реализации явно не был закреплён отдельным ADR, что блокировало старт реализации stubs и унификацию CI/CD-конвейеров.
+Для Commenting Service язык реализации явно не был закреплён отдельным ADR, что блокировало старт реализации stubs и унификацию CI/CD-конвейеров.
 
 Требуется единый ADR верхнего уровня, который фиксирует целостную language/runtime стратегию для всех микросервисов VEDO Core и сохраняет согласованность с уже принятыми решениями.
 
@@ -33,10 +37,10 @@
 | Versioning Service | Rust (tokio) | compute-intensive diff/merge; уже закреплено в `ADR-IMPL.STACK.version-control-rust-strategy` |
 | Auth Service | Go | high-throughput stateless auth; уже закреплено в `ADR-IMPL.STACK.auth-service-go-strategy` |
 | Metrics Service | Python (FastAPI) | analytics/aggregation; уже закреплено в `ADR-IMPL.STACK.metrics-python-strategy` |
-| API Gateway | Go | I/O-bound proxy/middleware, высокая конкуррентность соединений, gRPC/REST/GraphQL маршрутизация |
-| Ticket Service | Go | CRUD + внешние REST-интеграции (Jira/YouTrack), PostgreSQL, быстрый delivery |
-| Publisher Service | Rust | критична CPU-bound часть экспорта графа и формирования больших snapshot-файлов |
-| Public Browse API | Go | read-only публичный API с высоким трафиком, простое горизонтальное масштабирование |
+| API Gateway | Go | I/O-bound proxy/middleware, высокая конкуррентность соединений, gRPC/REST/GraphQL маршрутизация; закреплено в `ADR-IMPL.STACK.api-gateway-go-strategy` |
+| Ticket Service | Go | CRUD + внешние REST-интеграции (Jira/YouTrack), PostgreSQL, быстрый delivery; закреплено в `ADR-IMPL.STACK.ticket-service-go-strategy` |
+| Publisher Service | Rust | критична CPU-bound часть экспорта графа и формирования больших snapshot-файлов; закреплено в `ADR-IMPL.STACK.publisher-rust-strategy` |
+| Public Browse API | Rust | read-only публичный API, идентичная Ontology Service кодовая база; переиспользование общей графовой логики с Ontology Service через cargo workspace; закреплено в `ADR-IMPL.STACK.public-browse-api-rust-strategy` |
 | Commenting Service | Go | WebSocket + Redis Pub/Sub, много долгоживущих соединений |
 | Frontend | TypeScript + Vue 3 | уже закреплено в `ADR-IMPL.STACK.frontend-vue-strategy` |
 
@@ -75,5 +79,9 @@
 - `ADR-IMPL.STACK.auth-service-go-strategy`
 - `ADR-IMPL.STACK.metrics-python-strategy`
 - `ADR-IMPL.STACK.frontend-vue-strategy`
+- `ADR-IMPL.STACK.api-gateway-go-strategy`
+- `ADR-IMPL.STACK.ticket-service-go-strategy`
+- `ADR-IMPL.STACK.publisher-rust-strategy`
+- `ADR-IMPL.STACK.public-browse-api-rust-strategy`
 
 ---

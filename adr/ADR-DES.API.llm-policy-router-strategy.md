@@ -211,7 +211,7 @@ llm:
 
 ## Связанные ADR
 
-- `ADR-DES.SECURITY.nl-query-opt-in-mandate` — дополняется: consent-диалог отображается только для внешних провайдеров; MCP-сервер и on-premise — без consent.
+- `ADR-DES.SECURITY.nl-query-opt-in-mandate` — дополняется: диалог согласия отображается только для внешних провайдеров; MCP-сервер и on-premise — без согласия.
 - `ADR-DES.SECURITY.gitlab-like-organization-model` — расширяется: роли Owner/Admin получают право управлять настройкой external LLM override.
 - `ADR-DES.INFRA.airgap-offline-deployment-strategy` — дополняется: on-premise поставка включает конфигурацию локальной LLM.
 - `ADR-DES.API.sparql-query-language-strategy` — NL-режим запросов проходит через LLM Policy Router.
@@ -224,7 +224,7 @@ llm:
 - [ ] Административные настройки override в UI
 - [ ] Кэширование visibility в Ontology Service (60s TTL)
 - [ ] Audit-логирование всех решений роутера
-- [ ] Consent-диалог в UI (REQ-USR.UI.external-llm-consent)
+2. Consent-диалог в UI (REQ-USR.UI.external-llm-consent)
 - [ ] Визуальный индикатор политики в AI-интерфейсе (REQ-USR.UI.visibility-indicator)
 - [ ] Документация Admin Guide: конфигурация LLM для SaaS и on-premise
 - [ ] Документация User Guide: как работают AI-функции в зависимости от уровня видимости

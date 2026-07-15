@@ -2,14 +2,14 @@
 
 | Атрибут | Значение |
 |---------|----------|
-| **ID** | REQ-USR.AI.external-llm-consent |
+| **ID** | REQ-USR.UI.external-llm-consent |
 | **Уровень** | USR |
 | **Атрибут качества** | Usability |
 | **Приоритет** | P0 |
 | **Статус** | ЧЕРНОВИК |
 | **Источник** | Уточнение стейкхолдера по вопросу 1.1 матрицы качества M2 |
 | **Связанные ADR** | `ADR-DES.SECURITY.nl-query-opt-in-mandate` |
-| **Связанные REQ** | `REQ-DATA.AI.llm-policy` |
+| **Связанные REQ** | `REQ-FUN.API.llm-policy` |
 
 ---
 

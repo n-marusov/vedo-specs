@@ -2,7 +2,7 @@
 
 | Атрибут | Значение |
 |---------|----------|
-| **ID** | REQ-FUN.AI.class-hierarchy-accuracy |
+| **ID** | REQ-FUN.API.class-hierarchy-accuracy |
 | **Уровень** | FUN |
 | **Атрибут качества** | Functionality |
 | **Приоритет** | P0 |

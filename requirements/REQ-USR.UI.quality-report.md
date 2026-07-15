@@ -2,13 +2,13 @@
 
 | Атрибут | Значение |
 |---------|----------|
-| **ID** | REQ-USR.AI.quality-report |
+| **ID** | REQ-USR.UI.quality-report |
 | **Уровень** | USR |
 | **Атрибут качества** | Usability |
 | **Приоритет** | P0 |
 | **Статус** | ЧЕРНОВИК |
 | **Источник** | Уточнение стейкхолдера по вопросу 1.2 матрицы качества M2 |
-| **Связанные REQ** | `REQ-FUN.AI.pre-save-validation`, `REQ-FUN.AI.owl-syntax-validity`, `REQ-FUN.AI.no-cyclic-hierarchy`, `REQ-FUN.AI.class-hierarchy-accuracy`, `REQ-FUN.AI.properties-accuracy` |
+| **Связанные REQ** | `REQ-FUN.API.pre-save-validation`, `REQ-FUN.API.owl-syntax-validity`, `REQ-FUN.API.no-cyclic-hierarchy`, `REQ-FUN.API.class-hierarchy-accuracy`, `REQ-FUN.API.properties-accuracy` |
 
 ---
 

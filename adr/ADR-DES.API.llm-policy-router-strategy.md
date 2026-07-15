@@ -17,7 +17,7 @@ M2 (AI Assistant & Low-Barrier Onboarding) вводит AI-функции, ис�
 | **SaaS** | Внешние (OpenAI, Anthropic и др.) |
 | **On-premise** | Локальная (разворачивается клиентом внутри периметра) |
 
-Уровни видимости онтологий (Public / Internal / Private — см. `REQ-DATA.AI.ontology-visibility-levels`) накладывают дополнительные ограничения на использование LLM в SaaS:
+Уровни видимости онтологий (Public / Internal / Private — см. `REQ-FUN.DATA.ontology-visibility-levels`) накладывают дополнительные ограничения на использование LLM в SaaS:
 
 | Уровень | SaaS (по умолчанию) | On-premise |
 |---------|---------------------|------------|
@@ -25,18 +25,18 @@ M2 (AI Assistant & Low-Barrier Onboarding) вводит AI-функции, ис�
 | **Internal** | Внешние LLM ЗАБЛОКИРОВАНЫ | Локальная LLM |
 | **Private** | Внешние LLM ЗАБЛОКИРОВАНЫ | Локальная LLM |
 
-Для SaaS администратор группы/онтологии может явно разрешить внешние LLM для Internal/Private через настройки (см. `REQ-ADMIN.AI.external-llm-override`).
+Для SaaS администратор группы/онтологии может явно разрешить внешние LLM для Internal/Private через настройки (см. `REQ-FUN.UI.external-llm-override`).
 
 Без централизованного механизма роутинга логика политик будет дублироваться в каждом AI-компоненте (NL→OWL, NL-запросы, подсказки), что приведёт к расхождению поведения и усложнит аудит.
 
 ## Требование-источник
 
-- `REQ-DATA.AI.llm-policy`
-- `REQ-DATA.AI.ontology-visibility-levels`
-- `REQ-ADMIN.AI.external-llm-override`
-- `REQ-CON.AI.saas-llm-limitations`
-- `REQ-CON.AI.on-premise-llm-limitations`
-- `REQ-USR.AI.external-llm-consent`
+- `REQ-FUN.API.llm-policy`
+- `REQ-FUN.DATA.ontology-visibility-levels`
+- `REQ-FUN.UI.external-llm-override`
+- `REQ-CON.INFRA.saas-llm-limitations`
+- `REQ-CON.INFRA.on-premise-llm-limitations`
+- `REQ-USR.UI.external-llm-consent`
 
 ## Решение
 
@@ -92,7 +92,7 @@ function route_llm_request(ontology_id, action):
     visibility = ontology_service.get_visibility(ontology_id)  # cached, TTL 60s
 
     if visibility == "public":
-        check_consent(ontology_id)          # REQ-USR.AI.external-llm-consent
+        check_consent(ontology_id)          # REQ-USR.UI.external-llm-consent
         audit_log(visibility="public", provider=selected_provider, consent=consent_status)
         return route_to(selected_external_provider)
 
@@ -105,7 +105,7 @@ function route_llm_request(ontology_id, action):
                      "Администратор может разрешить внешние LLM в настройках.")
 
     # Admin override granted
-    check_consent(ontology_id)              # REQ-USR.AI.external-llm-consent
+    check_consent(ontology_id)              # REQ-USR.UI.external-llm-consent
     audit_log(visibility=visibility, override=true, consent=consent_status)
     return route_to(selected_external_provider)
 ```
@@ -224,8 +224,8 @@ llm:
 - [ ] Административные настройки override в UI
 - [ ] Кэширование visibility в Ontology Service (60s TTL)
 - [ ] Audit-логирование всех решений роутера
-- [ ] Consent-диалог в UI (REQ-USR.AI.external-llm-consent)
-- [ ] Визуальный индикатор политики в AI-интерфейсе (REQ-USR.AI.visibility-indicator)
+- [ ] Consent-диалог в UI (REQ-USR.UI.external-llm-consent)
+- [ ] Визуальный индикатор политики в AI-интерфейсе (REQ-USR.UI.visibility-indicator)
 - [ ] Документация Admin Guide: конфигурация LLM для SaaS и on-premise
 - [ ] Документация User Guide: как работают AI-функции в зависимости от уровня видимости
 - [ ] Интеграционные тесты: все комбинации deployment × visibility × override

@@ -2,13 +2,13 @@
 
 | Атрибут | Значение |
 |---------|----------|
-| **ID** | REQ-FUN.AI.pre-save-validation |
+| **ID** | REQ-FUN.API.pre-save-validation |
 | **Уровень** | FUN |
 | **Атрибут качества** | Functionality |
 | **Приоритет** | P0 |
 | **Статус** | ЧЕРНОВИК |
 | **Источник** | Уточнение стейкхолдера по вопросу 1.2 матрицы качества M2 |
-| **Связанные REQ** | `REQ-FUN.AI.owl-syntax-validity`, `REQ-FUN.AI.no-cyclic-hierarchy`, `REQ-FUN.AI.class-hierarchy-accuracy`, `REQ-FUN.AI.properties-accuracy` |
+| **Связанные REQ** | `REQ-FUN.API.owl-syntax-validity`, `REQ-FUN.API.no-cyclic-hierarchy`, `REQ-FUN.API.class-hierarchy-accuracy`, `REQ-FUN.API.properties-accuracy` |
 
 ---
 
@@ -20,12 +20,12 @@
 
 Перед сохранением сгенерированной NL→OWL онтологии система выполняет полную валидацию по всем критериям:
 
-1. Синтаксическая валидность OWL (`REQ-FUN.AI.owl-syntax-validity`)
-2. Отсутствие циклических зависимостей (`REQ-FUN.AI.no-cyclic-hierarchy`)
-3. Корректность иерархии классов (`REQ-FUN.AI.class-hierarchy-accuracy`) — проверка на эталонном наборе
-4. Корректность свойств (`REQ-FUN.AI.properties-accuracy`) — проверка на эталонном наборе
+1. Синтаксическая валидность OWL (`REQ-FUN.API.owl-syntax-validity`)
+2. Отсутствие циклических зависимостей (`REQ-FUN.API.no-cyclic-hierarchy`)
+3. Корректность иерархии классов (`REQ-FUN.API.class-hierarchy-accuracy`) — проверка на эталонном наборе
+4. Корректность свойств (`REQ-FUN.API.properties-accuracy`) — проверка на эталонном наборе
 
-Результаты валидации отображаются пользователю в виде отчёта (см. `REQ-USR.AI.quality-report`).
+Результаты валидации отображаются пользователю в виде отчёта (см. `REQ-USR.UI.quality-report`).
 
 ## Критерии приёмки
 

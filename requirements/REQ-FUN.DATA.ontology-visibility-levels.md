@@ -2,7 +2,7 @@
 
 | Атрибут | Значение |
 |---------|----------|
-| **ID** | REQ-DATA.AI.ontology-visibility-levels |
+| **ID** | REQ-FUN.DATA.ontology-visibility-levels |
 | **Уровень** | FUN |
 | **Атрибут качества** | Functionality |
 | **Приоритет** | P0 |
@@ -26,7 +26,7 @@
 | **Internal** | Внутренняя онтология | Все аутентифицированные пользователи VEDO |
 | **Private** | Приватная онтология | Только владелец и члены команды |
 
-Уровень видимости сохраняется в метаданных онтологии (`visibility TEXT CHECK (visibility IN ('public', 'internal', 'private'))`) и определяет политику использования LLM (см. `REQ-DATA.AI.llm-policy`).
+Уровень видимости сохраняется в метаданных онтологии (`visibility TEXT CHECK (visibility IN ('public', 'internal', 'private'))`) и определяет политику использования LLM (см. `REQ-FUN.API.llm-policy`).
 
 При выборе уровня видимости система отображает описание последствий для AI-функций:
 

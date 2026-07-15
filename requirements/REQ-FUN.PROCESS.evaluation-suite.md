@@ -2,13 +2,13 @@
 
 | Атрибут | Значение |
 |---------|----------|
-| **ID** | REQ-FUN.AI.evaluation-suite |
+| **ID** | REQ-FUN.PROCESS.evaluation-suite |
 | **Уровень** | FUN |
 | **Атрибут качества** | Functionality |
 | **Приоритет** | P0 |
 | **Статус** | ЧЕРНОВИК |
 | **Источник** | Уточнение стейкхолдера по вопросу 1.2 матрицы качества M2 |
-| **Связанные REQ** | `REQ-FUN.AI.class-hierarchy-accuracy`, `REQ-FUN.AI.properties-accuracy`, `REQ-FUN.AI.no-cyclic-hierarchy`, `REQ-FUN.AI.owl-syntax-validity` |
+| **Связанные REQ** | `REQ-FUN.API.class-hierarchy-accuracy`, `REQ-FUN.API.properties-accuracy`, `REQ-FUN.API.no-cyclic-hierarchy`, `REQ-FUN.API.owl-syntax-validity` |
 
 ---
 
@@ -43,5 +43,5 @@ CI/CD включает автоматический evaluation suite для NL�
 2. Тесты созданы с участием эксперта-онтолога.
 3. Suite запускается в CI/CD при каждом изменении AI-промптов или LLM-модели.
 4. Результаты доступны в CI/CD отчёте с детализацией по каждому тесту.
-5. При падении ниже пороговых значений (`REQ-FUN.AI.class-hierarchy-accuracy`, `REQ-FUN.AI.properties-accuracy`, `REQ-FUN.AI.no-cyclic-hierarchy`, `REQ-FUN.AI.owl-syntax-validity`) билд блокируется.
+5. При падении ниже пороговых значений (`REQ-FUN.API.class-hierarchy-accuracy`, `REQ-FUN.API.properties-accuracy`, `REQ-FUN.API.no-cyclic-hierarchy`, `REQ-FUN.API.owl-syntax-validity`) билд блокируется.
 6. Эталонные онтологии в тестовом наборе версионируются вместе с кодом.

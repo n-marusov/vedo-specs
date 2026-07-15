@@ -2,7 +2,7 @@
 
 | Атрибут | Значение |
 |---------|----------|
-| **ID** | REQ-ADMIN.AI.external-llm-override |
+| **ID** | REQ-FUN.UI.external-llm-override |
 | **Уровень** | FUN |
 | **Атрибут качества** | Functionality |
 | **Приоритет** | P0 |

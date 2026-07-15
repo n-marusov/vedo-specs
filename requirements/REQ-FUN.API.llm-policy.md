@@ -2,13 +2,13 @@
 
 | Атрибут | Значение |
 |---------|----------|
-| **ID** | REQ-DATA.AI.llm-policy |
+| **ID** | REQ-FUN.API.llm-policy |
 | **Уровень** | FUN |
 | **Атрибут качества** | Functionality |
 | **Приоритет** | P0 |
 | **Статус** | ЧЕРНОВИК |
 | **Источник** | Уточнение стейкхолдера по вопросу 1.1 матрицы качества M2 |
-| **Связанные REQ** | `REQ-DATA.AI.ontology-visibility-levels`, `REQ-ADMIN.AI.external-llm-override` |
+| **Связанные REQ** | `REQ-FUN.DATA.ontology-visibility-levels`, `REQ-FUN.UI.external-llm-override` |
 | **Связанные ADR** | `ADR-DES.API.llm-policy-router-strategy` |
 
 ---
@@ -35,8 +35,8 @@
 1. **Локальная LLM существует только в on-premise.** В SaaS локальная LLM не предоставляется.
 2. **SaaS использует только внешние LLM-провайдеры** (OpenAI, Anthropic и др.).
 3. **On-premise использует только локальную LLM.** Внешние провайдеры недоступны по сети.
-4. Для **Internal и Private в SaaS** внешние LLM по умолчанию заблокированы. Администратор может сознательно разрешить (см. `REQ-ADMIN.AI.external-llm-override`).
-5. Для **Public в SaaS** внешние LLM разрешены всегда (с предупреждением пользователю — см. `REQ-USR.AI.external-llm-consent`).
+4. Для **Internal и Private в SaaS** внешние LLM по умолчанию заблокированы. Администратор может сознательно разрешить (см. `REQ-FUN.UI.external-llm-override`).
+5. Для **Public в SaaS** внешние LLM разрешены всегда (с предупреждением пользователю — см. `REQ-USR.UI.external-llm-consent`).
 
 Политика применяется на уровне API Gateway до вызова LLM (см. `ADR-DES.API.llm-policy-router-strategy`).
 

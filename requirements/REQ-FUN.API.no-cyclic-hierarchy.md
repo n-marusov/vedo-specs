@@ -2,7 +2,7 @@
 
 | Атрибут | Значение |
 |---------|----------|
-| **ID** | REQ-FUN.AI.no-cyclic-hierarchy |
+| **ID** | REQ-FUN.API.no-cyclic-hierarchy |
 | **Уровень** | FUN |
 | **Атрибут качества** | Functionality |
 | **Приоритет** | P0 |

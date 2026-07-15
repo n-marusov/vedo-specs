@@ -2,7 +2,7 @@
 
 | Атрибут | Значение |
 |---------|----------|
-| **ID** | REQ-FUN.AI.max-refinement-iterations |
+| **ID** | REQ-FUN.API.max-refinement-iterations |
 | **Уровень** | FUN |
 | **Атрибут качества** | Functionality |
 | **Приоритет** | P1 |

@@ -2,7 +2,7 @@
 
 | Атрибут | Значение |
 |---------|----------|
-| **ID** | REQ-USR.AI.visibility-indicator |
+| **ID** | REQ-USR.UI.visibility-indicator |
 | **Уровень** | USR |
 | **Атрибут качества** | Usability |
 | **Приоритет** | P1 |

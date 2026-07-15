@@ -24,9 +24,10 @@ C4Deployment
             Container(ticketClassifier, "Classifier", "Python", "Классификация и дедупликация")
             Container(ticketSync, "Ticket Synchronizer", "Go", "Двусторонняя синхронизация issue")
             Container(ticketNotifier, "Ticket Notifier", "Go", "Email/in-app уведомления")
+            Container(documentExtractor, "Document Extractor", "Python", "Извлечение онтологии из документов через LLM")
         }
         Deployment_Node(db, "Data Layer") {
-            ContainerDb(neo4j, "Neo4j", "Cypher", "Triple Store (working)")
+                    ContainerDb(neo4j, "Neo4j", "Cypher", "Triple Store (working)")
             ContainerDb(publishNeo4j, "Public Neo4j", "Cypher", "Read-only copy (published)")
             ContainerDb(postgres, "PostgreSQL", "SQL/JSONB", "Version Store")
             ContainerDb(supportDb, "Support DB", "PostgreSQL", "Support metadata, break-glass audit")
@@ -52,6 +53,7 @@ C4Deployment
     System_Ext(erp, "ERP / PLM", "External Systems")
     System_Ext(gitlabIssues, "GitLab", "Внешняя система тикетов (Issues)")
     System_Ext(smtpGateway, "SMTP-шлюз", "Почтовая доставка уведомлений")
+    System_Ext(llmProvider, "LLM-провайдер", "OpenAI / Anthropic / локальная LLM")
 
     Rel(api_gw, ontology, "gRPC")
     Rel(api_gw, versioning, "gRPC")
@@ -59,6 +61,7 @@ C4Deployment
     Rel(api_gw, publisher, "gRPC")
     Rel(api_gw, commenting, "REST /api/v1/comments")
     Rel(api_gw, ticketApi, "REST /support/tickets")
+    Rel(api_gw, documentExtractor, "HTTP прокси (/extract-from-document)")
     Rel(spa, commenting, "WebSocket /ws/comments")
     Rel(spa, ticketApi, "HTTPS/REST")
     Rel(commenting, commentingDb, "SQL")
@@ -80,6 +83,7 @@ C4Deployment
     Rel(api_gw, redis, "Cache")
     Rel(auth, keycloak, "OAuth2")
     Rel(erp, api_gw, "REST API")
+    Rel(documentExtractor, llmProvider, "HTTP API (генерация последовательности шагов)")
 
     Rel(cli, api_gw, "gRPC (MR, export)")
     Rel(cli, neo4j, "Backup/restore")
@@ -111,6 +115,7 @@ C4Deployment
             Container(ticketClassifier, "Classifier", "Python", "Классификация и дедупликация")
             Container(ticketSync, "Ticket Synchronizer", "Go", "Двусторонняя синхронизация issue")
             Container(ticketNotifier, "Ticket Notifier", "Go", "Email/in-app уведомления")
+            Container(documentExtractor, "Document Extractor", "Python", "Извлечение онтологии из документов через LLM")
         }
         Deployment_Node(storage, "Storage (Customer Provided)") {
             ContainerDb(neo4j, "Neo4j Enterprise", "Existing", "Working ontology")
@@ -138,12 +143,14 @@ C4Deployment
     System_Ext(backup, "Backup Storage", "Nightly backup")
     System_Ext(gitlabIssues, "GitLab", "Внешняя система тикетов (Issues)")
     System_Ext(smtpGateway, "SMTP-шлюз", "Почтовая доставка уведомлений")
+    System_Ext(llmProvider, "LLM-провайдер", "OpenAI / Anthropic / локальная LLM (опционально для on-premise)")
 
     Rel(api_gw, ontology, "Internal")
     Rel(api_gw, versioning, "Internal")
     Rel(api_gw, publisher, "Internal")
     Rel(api_gw, commenting, "REST /api/v1/comments")
     Rel(api_gw, ticketApi, "REST /support/tickets")
+    Rel(api_gw, documentExtractor, "HTTP прокси (/extract-from-document)")
     Rel(spa, commenting, "WebSocket /ws/comments")
     Rel(spa, ticketApi, "HTTPS/REST")
     Rel(commenting, commentingDb, "SQL")
@@ -164,6 +171,7 @@ C4Deployment
     Rel(keycloak, api_gw, "OAuth2")
     Rel(ldap, keycloak, "Sync")
     Rel(backup, replica_store, "Off-site/cold copy")
+    Rel(documentExtractor, llmProvider, "HTTP API (генерация последовательности шагов)")
 
     Rel(cli, api_gw, "gRPC (MR, export)")
     Rel(cli, neo4j, "Backup/restore")
@@ -197,6 +205,7 @@ C4Deployment
             Container(ticketClassifier, "Classifier", "Python", "Port 9099, debug enabled")
             Container(ticketSync, "Ticket Synchronizer", "Go", "Port 9100, debug enabled")
             Container(ticketNotifier, "Ticket Notifier", "Go", "Port 9101, debug enabled")
+            Container(documentExtractor, "Document Extractor", "Python", "Port 9102, debug enabled")
         }
         Deployment_Node(databases, "Data Layer (Local)") {
             ContainerDb(neo4j, "Neo4j", "Cypher", "Ports 7687/7474, рабочая онтология")
@@ -229,6 +238,7 @@ C4Deployment
     Rel(api_gw, ticketApi, "localhost:9097")
     Rel(spa, commenting, "localhost:9096/ws")
     Rel(spa, ticketApi, "localhost:9097")
+    Rel(api_gw, documentExtractor, "localhost:9102")
     Rel(commenting, commentingDb, "localhost:5434")
     Rel(ticketApi, ticketDb, "localhost:5435")
     Rel(ticketApi, ticketClassifier, "localhost:9099")
@@ -278,4 +288,5 @@ C4Deployment
 | Backup | Manual via `vedo-cli backup` | Automated 3-2-1 with `vedo-cli backup/verify` |
 | vedo-cli | Local build под целевую платформу, debug enabled | Single binary (linux/amd64, linux/arm64, darwin/amd64, darwin/arm64, windows/amd64), admin workstation |
 | Debug ports | Exposed | Disabled |
+| Document Extractor | Port 9102, debug enabled | Production, LLM API key from Vault |
 | Hot reload | Source mounts | Not applicable |

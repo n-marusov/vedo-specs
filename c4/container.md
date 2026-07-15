@@ -18,6 +18,7 @@ C4Container
         Container(spa, "Vue 3 SPA", "TypeScript/Vue 3", "Веб-интерфейс")
         Container(apiGw, "API Gateway", "Go/gin", "Единая точка входа, JWT, маршрутизация")
         Container(ontology, "Ontology Service", "Rust/Actix-web", "Graph operations, TBox/ABox, Neo4j driver")
+        Container(documentExtractor, "Document Extractor", "Python", "Извлечение OWL-онтологии из документов через LLM: парсинг форматов, генерация последовательности шагов, предпросмотр")
         Container(versioning, "Versioning Service", "Rust/Tokio", "Git-like versioning")
         Container(auth, "Auth Service", "Go/gin", "JWT, OAuth2")
         Container(metrics, "Metrics Service", "Python/FastAPI", "Metrics collection")
@@ -50,6 +51,7 @@ C4Container
     System_Ext(vcs, "Git-репозиторий", "GitHub/GitLab")
     System_Ext(gitlabIssues, "GitLab", "Внешняя система тикетов (Issues)")
     System_Ext(smtpGateway, "SMTP-шлюз", "Почтовая доставка уведомлений")
+    System_Ext(llmProvider, "LLM-провайдер", "OpenAI / Anthropic / локальная LLM")
 
     Rel(uk, spa, "Использует")
     Rel(ua, spa, "Использует")
@@ -67,6 +69,7 @@ C4Container
     Rel(publicBrowseApi, publishNeo4j, "Read-only Cypher, allowlisted queries")
 
     Rel(apiGw, ontology, "gRPC")
+    Rel(apiGw, documentExtractor, "HTTP прокси (/extract-from-document)")
     Rel(apiGw, versioning, "gRPC")
     Rel(apiGw, auth, "HTTP/JWT")
     Rel(apiGw, publisher, "gRPC")
@@ -77,6 +80,8 @@ C4Container
     Rel(spa, commenting, "WebSocket /ws/comments", "JWT auth on connect")
 
     Rel(cli, apiGw, "gRPC (MR, экспорт)")
+    Rel(documentExtractor, ontology, "gRPC ApplySequence")
+    Rel(documentExtractor, llmProvider, "HTTP API (генерация последовательности шагов)")
     Rel(cli, ontology, "Diagnostics (health/ready)")
     Rel(cli, versioning, "Diagnostics")
     Rel(cli, auth, "Diagnostics")

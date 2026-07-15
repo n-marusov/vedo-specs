@@ -28,6 +28,7 @@ C4Context
     System_Ext(vcs, "Git-репозиторий", "GitHub/GitLab (опциональный экспорт)")
     System_Ext(gitlabIssues, "GitLab", "Внешняя система тикетов (Issues)")
     System_Ext(smtpGateway, "SMTP-шлюз", "Почтовая доставка уведомлений")
+    System_Ext(llmProvider, "LLM-провайдер", "OpenAI / Anthropic / локальная LLM")
 
     Rel(uk, vedo, "Редактирует", "HTTPS/WebSocket")
     Rel(ua, vedo, "Настраивает", "HTTPS")
@@ -44,6 +45,7 @@ C4Context
     Rel(vedo, vcs, "Экспортирует онтологии", "SSH/Git")
     Rel(vedo, gitlabIssues, "Синхронизирует тикеты", "HTTPS/Webhook")
     Rel(vedo, smtpGateway, "Отправляет email-уведомления", "SMTP/TLS")
+    Rel(vedo, llmProvider, "Извлекает структуру онтологии из документа", "HTTPS")
 
     UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```

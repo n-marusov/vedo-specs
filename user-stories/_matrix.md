@@ -84,3 +84,8 @@
 | [US-a11y.versioning.switch-branch](US-a11y.versioning.switch-branch.md) | [D3](requirements/REQ-NFR.UI.wcag-mvp-scenarios.md#сценарий-d3-переключение-между-ветками) | P1 |
 | [US-a11y.comments.add-keyboard](US-a11y.comments.add-keyboard.md) | [E2](requirements/REQ-NFR.UI.wcag-mvp-scenarios.md#сценарий-e2-добавление-комментария) | P1 |
 | [US-a11y.publish.view-public](US-a11y.publish.view-public.md) | [F1](requirements/REQ-NFR.UI.wcag-mvp-scenarios.md#сценарий-f1-открытие-публичной-ссылки) | P1 |
+| [US-io.document.extract-md-txt](US-io.document.extract-md-txt.md) | [UC-io.import.extract-ontology-from-document](use-cases.md#uc-io.import.extract-ontology-from-document) | P1 |
+| [US-io.document.extract-pdf-docx](US-io.document.extract-pdf-docx.md) | [UC-io.import.extract-ontology-from-document](use-cases.md#uc-io.import.extract-ontology-from-document) | P1 |
+| [US-io.document.extract-structured](US-io.document.extract-structured.md) | [UC-io.import.import-structured-data](use-cases.md#uc-io.import.import-structured-data) | P1 |
+| [US-io.document.preview-sequence](US-io.document.preview-sequence.md) | [UC-io.import.extract-ontology-from-document](use-cases.md#uc-io.import.extract-ontology-from-document) | P1 |
+| [US-io.document.batch-extract](US-io.document.batch-extract.md) | [UC-io.import.batch-extract-ontology](use-cases.md#uc-io.import.batch-extract-ontology) | P2 |

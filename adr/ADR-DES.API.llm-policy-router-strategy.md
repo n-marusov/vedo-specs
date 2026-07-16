@@ -216,6 +216,7 @@ llm:
 - `ADR-DES.INFRA.airgap-offline-deployment-strategy` — дополняется: on-premise поставка включает конфигурацию локальной LLM.
 - `ADR-DES.API.sparql-query-language-strategy` — NL-режим запросов проходит через LLM Policy Router.
 - `ADR-DES.INTEGRATION.mcp-server-query-adoption` — MCP-инструменты проходят через тот же роутер.
+- `ADR-DES.INFRA.ai-orchestration-service-strategy` — миграция роутера в ai-orchestration-service (см. Addendum).
 
 ## Чек-лист реализации
 
@@ -232,3 +233,24 @@ llm:
 - [ ] Метрики: latency роутера, hit-rate кэша visibility, количество блокировок по политике
 
 ---
+
+## Addendum: Migration to ai-orchestration-service (2026-07-16)
+
+Per `ADR-DES.INFRA.ai-orchestration-service-strategy`, the LLM Policy Router will be migrated from API Gateway to the dedicated `ai-orchestration-service` in M3.
+
+**M2 (current):** LLM Policy Router operates as API Gateway middleware, as described in this ADR. The architecture diagram above is valid for the M2 prototype phase.
+
+**M3 (planned):** Router moves to `ai-orchestration-service` (Go), becoming gRPC middleware within the AI orchestration service. All LLM-policy decisions happen inside the AI service, not the Gateway. API Gateway proxies AI requests to `ai-orchestration-service` without policy logic.
+
+**What changes:**
+- Deployment location: API Gateway -> ai-orchestration-service
+- API surface: direct Go function call -> gRPC call from Gateway to ai-orchestration-service
+- Resilience requirements from `REQ-NFR.INFRA.router-resilience` apply to ai-orchestration-service (not Gateway)
+
+**What stays the same:**
+- Policy decision algorithm (deployment type x visibility x admin override)
+- Configuration schema (tenant YAML)
+- Audit logging format
+- Caching strategy (visibility TTL 60s)
+
+**Related:** `ADR-DES.INFRA.ai-orchestration-service-strategy` — full rationale for the extraction.

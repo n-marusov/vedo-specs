@@ -154,3 +154,4 @@ ADR-<LEVEL>.<AREA>.<semantic-tag>
 | `ADR-DES.API.cypher-query-language-adoption` | CYPHER язык запросов | Принято | 2026-05-24 |
 | `ADR-DES.INTEGRATION.mcp-server-query-adoption` | MCP-сервер | Принято | 2026-05-24 |
 | `ADR-DES.SECURITY.nl-query-opt-in-mandate` | Opt-in для NL запросов | Принято | 2026-05-24 |
+| `ADR-DES.INFRA.ai-orchestration-service-strategy` | Выделение AI-оркестрации из Gateway | Предложено | 2026-07-16 |

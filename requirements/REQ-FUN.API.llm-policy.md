@@ -9,7 +9,7 @@
 | **Статус** | ЧЕРНОВИК |
 | **Источник** | Уточнение стейкхолдера по вопросу 1.1 матрицы качества M2 |
 | **Связанные REQ** | `REQ-FUN.DATA.ontology-visibility-levels`, `REQ-FUN.UI.external-llm-override` |
-| **Связанные ADR** | `ADR-DES.API.llm-policy-router-strategy` |
+| **Связанные ADR** | `ADR-DES.API.llm-policy-router-strategy`, `ADR-DES.INFRA.ai-orchestration-service-strategy` |
 
 ---
 
@@ -38,7 +38,7 @@
 4. Для **Internal и Private в SaaS** внешние LLM по умолчанию заблокированы. Администратор может сознательно разрешить (см. `REQ-FUN.UI.external-llm-override`).
 5. Для **Public в SaaS** внешние LLM разрешены всегда (с предупреждением пользователю — см. `REQ-USR.UI.external-llm-consent`).
 
-Политика применяется на уровне API Gateway до вызова LLM (см. `ADR-DES.API.llm-policy-router-strategy`).
+Политика применяется до вызова LLM-провайдера. В M2 — на уровне API Gateway, в M3+ — на уровне ai-orchestration-service (см. `ADR-DES.API.llm-policy-router-strategy`, `ADR-DES.INFRA.ai-orchestration-service-strategy`).
 
 ## Критерии приёмки
 

@@ -418,3 +418,29 @@ CREATE TABLE prompt_security_events (
 - [ ] Документация User Guide: почему запрос может быть заблокирован
 
 ---
+
+## Addendum: Migration to ai-orchestration-service (2026-07-16)
+
+Per `ADR-DES.INFRA.ai-orchestration-service-strategy`, the three defense levels currently shown inside the API Gateway box will be migrated to the dedicated `ai-orchestration-service` in M3.
+
+**M2 (current):** Defense levels 1-3 operate as part of API Gateway, as described in this ADR. The architecture diagram above is valid for the M2 prototype phase.
+
+**M3 (planned):** All three levels move to `ai-orchestration-service` (Go), becoming gRPC middleware within the AI orchestration service:
+- Level 1 (Pre-filtering): Validates prompts before LLM calls
+- Level 2 (System prompt): Injects hardened system prompt
+- Level 3 (Post-processing): Validates LLM responses
+
+API Gateway proxies AI requests to `ai-orchestration-service` without prompt injection logic.
+
+**What changes:**
+- Deployment location: API Gateway -> ai-orchestration-service
+- API surface: direct function calls -> gRPC middleware
+
+**What stays the same:**
+- Three-level defense architecture
+- Blacklist configuration format (YAML, hot reload)
+- Audit logging format (prompt_security_events table)
+- Sandbox mode parameters
+- System prompt content
+
+**Related:** `ADR-DES.INFRA.ai-orchestration-service-strategy` -- full rationale for the extraction.

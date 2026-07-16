@@ -26,6 +26,7 @@ C4Component
     Container(versioning, "Versioning Service", "gRPC + HTTP management")
     Container(auth, "Auth Service", "gRPC + HTTP management")
     Container(commenting, "Commenting Service", "REST (CRUD) + WebSocket")
+    Container(aiOrch, "AI Orchestration Service", "gRPC", "NL→OWL, NL→Query, подсказки")
     ContainerDb(redis, "Redis Cluster", "RESP", "Cache")
     Container(monitoring, "Monitoring", "Grafana Stack", "Metrics, logs")
 
@@ -43,6 +44,7 @@ C4Component
     Rel(cache_middleware, redis, "Cache")
     Rel(rate_limiter, redis, "Counters")
     Rel(grpc_proxy, ontology, "gRPC")
+    Rel(grpc_proxy, aiOrch, "gRPC (/api/v1/ai/*)")
     Rel(grpc_proxy, versioning, "gRPC")
     Rel(grpc_proxy, auth, "gRPC")
     Rel(rest_handler, commenting, "REST (API Gateway проксирует /api/v1/comments)")

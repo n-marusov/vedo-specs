@@ -18,6 +18,7 @@ C4Component
         Component(command_dispatcher, "CommandDispatcher", "Go", "Command routing for mutations")
         Component(import_export_handler, "ImportExportHandler", "Go", "Import Plan / Apply / Report API")
         Component(error_contract_mapper, "ErrorContractMapper", "Go", "Stable error_code/message_key mapping")
+        Component(swagger, "SwaggerUI", "Static HTML/JS", "Интерактивная документация API (dev-only, ENABLE_SWAGGER_UI=true)")
         Component(tracing, "Tracing", "Go", "OpenTelemetry instrumentation")
     }
 
@@ -51,6 +52,8 @@ C4Component
     Rel(import_export_handler, ontology, "gRPC Import Plan / Export snapshot")
     Rel(import_export_handler, versioning, "gRPC Versioned batch / rollback ref")
     Rel(grpc_proxy, error_contract_mapper, "Map service errors")
+    Rel(rest_handler, swagger, "Serves /api/v1/docs (dev only)")
+    Rel(swagger, rest_handler, "Reads /api/v1/openapi.json")
     Rel(tracing, monitoring, "Traces")
 
     UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")

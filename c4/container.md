@@ -16,7 +16,7 @@ C4Container
 
     System_Boundary(vedo, "VEDO Core") {
         Container(spa, "Vue 3 SPA", "TypeScript/Vue 3", "Веб-интерфейс")
-        Container(apiGw, "API Gateway", "Go/gin", "Единая точка входа, JWT, маршрутизация")
+        Container(apiGw, "API Gateway", "Go/gin", "Единая точка входа, JWT, маршрутизация, Swagger UI (dev-only)")
         Container(ontology, "Ontology Service", "Rust/Actix-web", "Graph operations, TBox/ABox, Neo4j driver")
         Container(documentExtractor, "Document Extractor", "Python", "Извлечение OWL-онтологии из документов через LLM: парсинг форматов, генерация последовательности шагов, предпросмотр")
         Container(versioning, "Versioning Service", "Rust/Tokio", "Git-like versioning")
@@ -121,6 +121,8 @@ C4Container
     Rel(metrics, rabbitmq, "Consume")
     Rel(auth, keycloak, "OAuth2")
     Rel(industry, apiGw, "REST API")
+
+    Note_right_of(apiGw, "Swagger UI — dev-only (ENABLE_SWAGGER_UI=true)")
 
     Rel(metrics, monitoring, "Metrics")
     Rel(ontology, monitoring, "Traces")

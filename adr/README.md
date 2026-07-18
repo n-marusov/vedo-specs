@@ -54,6 +54,7 @@ ADR-<LEVEL>.<AREA>.<semantic-tag>
 
 | ID | Название | Статус | Дата |
 |----|----------|--------|------|
+| `ADR-DES.API.swagger-ui-dev-only-strategy` | Swagger UI dev-only | Принято | 2026-07-18 |
 | `ADR-DES.INFRA.monolith-vs-microservices` | Монолит vs Микросервисы | Принято | 2026-05-08 |
 | `ADR-IMPL.STACK.frontend-vue-strategy` | Фронтенд на Vue 3 | Принято | 2026-05-09 |
 | `ADR-IMPL.PROCESS.ui-design-pencil-adoption` | Pencil.dev для дизайна | Принято | 2026-05-09 |

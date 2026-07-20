@@ -1,6 +1,6 @@
 # ADR-IMPL.STACK.port-mapping-strategy
 
-**Дата:** 2026-05-19
+**Дата:** 2026-05-19 (amended 2026-07-20)
 **Статус:** PROPOSED
 
 ## Контекст
@@ -72,6 +72,85 @@
 | Tempo OTLP HTTP | 4318 | HTTP | Уже используется в `deploy/docker-compose.observability.yml` |
 | OpenTelemetry Collector metrics | 8888 / 8889 | HTTP | Уже используется в `deploy/docker-compose.observability.yml` |
 
+## Мультиокруженческий port mapping
+
+Для поддержки параллельного запуска нескольких окружений (dev, test, staging) без конфликтов портов принята схема смещений:
+
+| Окружение | Смещение | COMPOSE_PROJECT_NAME |
+|-----------|----------|----------------------|
+| Dev | нет (по умолчанию) | `vedo-core-dev` |
+| Test | +10000 (RabbitMQ AMQP: +10001) | `vedo-core-test` |
+| Staging | +20000 (RabbitMQ AMQP: +20002) | `vedo-core-staging` |
+
+Соглашение об именовании переменных:
+- `XXX_PORT` — хост-порт (меняется между окружениями)
+- `XXX_CONTAINER_PORT` — контейнерный порт (одинаков во всех окружениях)
+- `SERVICE_PORT` / `GRPC_PORT` внутри контейнера всегда используют контейнерные порты
+
+### Application Services
+
+| Сервис | Dev | Test (+10000) | Staging (+20000) |
+|--------|-----|---------------|-------------------|
+| Frontend (SPA) | 3000 | 13000 | 23000 |
+| Publish Browse UI | 3002 | 13002 | 23002 |
+| API Gateway | 8080 | 18080 | 28080 |
+| Auth Service (gRPC) | 9003 | 19003 | 29003 |
+| Versioning Service (gRPC) | 9002 | 19002 | 29002 |
+| Metrics Service | 8084 | 18084 | 28084 |
+| Publisher Service (gRPC) | 9005 | 19005 | 29005 |
+| Public Browse API (gRPC) | 9011 | 19011 | 29011 |
+| Commenting Service (gRPC) | 9004 | 19004 | 29004 |
+| Ticket API (REST) | 8088 | 18088 | 28088 |
+| Ticket API (gRPC) | 9010 | 19010 | 29010 |
+| Ticket Classifier | 8089 | 18089 | 28089 |
+| Ticket Telemetry Listener | 8090 | 18090 | 28090 |
+| Ticket Notifier | 8091 | 18091 | 28091 |
+| Document Extractor (gRPC) | 9013 | 19013 | 29013 |
+| AI Orchestration (health) | 8093 | 18093 | 28093 |
+| AI Orchestration (gRPC) | 9014 | 19014 | 29014 |
+
+### Infrastructure
+
+| Сервис | Dev | Test (+10000) | Staging (+20000) |
+|--------|-----|---------------|-------------------|
+| Neo4j (HTTP) | 7474 | 17474 | 27474 |
+| Neo4j (Bolt) | 7687 | 17687 | 27687 |
+| PostgreSQL | 5432 | 15432 | 25432 |
+| Redis | 6379 | 16379 | 26379 |
+| RabbitMQ (AMQP) | 5672 | 15673 | 25674 |
+| RabbitMQ (Management) | 15672 | 25672 | 35672 |
+| MinIO (API) | 9000 | 19000 | 29000 |
+| MinIO (Console) | 9001 | 19001 | 29001 |
+| Keycloak | 8180 | 18180 | 28180 |
+
+### Observability (profile: `obs`)
+
+| Сервис | Dev | Test (+10000) | Staging (+20000) |
+|--------|-----|---------------|-------------------|
+| Prometheus | 9090 | 19090 | 29090 |
+| Grafana | 3001 | 13001 | 23001 |
+| Loki | 3100 | 13100 | 23100 |
+| Tempo (HTTP) | 3200 | 13200 | 23200 |
+| Tempo (OTLP gRPC) | 4317 | 14317 | 24317 |
+| Tempo (OTLP HTTP) | 4318 | 14318 | 24318 |
+| OTEL Collector (Prometheus) | 8888 | 18888 | 28888 |
+| OTEL Collector (Health) | 8889 | 18889 | 28889 |
+
+### LLM (profile: `llm`)
+
+| Сервис | Dev | Test (+10000) | Staging (+20000) |
+|--------|-----|---------------|-------------------|
+| Ollama | 11434 | 21434 | 31434 |
+
+### Documentation (profile: `documentation`)
+
+| Сервис | Dev | Test (+10000) | Staging (+20000) |
+|--------|-----|---------------|-------------------|
+| User Guide | 5000 | 15000 | 25000 |
+| Developer Guide | 5001 | 15001 | 25001 |
+| Admin Guide | 5002 | 15002 | 25002 |
+| Integrator Guide | 5003 | 15003 | 25003 |
+
 ## Рассмотренные альтернативы
 
 | Альтернатива | Причина отклонения |
@@ -86,6 +165,8 @@
 - Предсказуемый запуск локального окружения и CI/staging без ручного подбора портов
 - Консистентность с API-архитектурой: внешний трафик через API Gateway, внутренний через internal-only порты
 - Упрощение диагностики и документации окружения
+- Параллельный запуск dev/test/staging без конфликтов портов за счёт схемы смещений
+- Единый справочник портов для всех окружений — dev, test (+10000), staging (+20000)
 
 **Отрицательные:**
 - Возможны конфликты с уже занятыми host-портами на машине разработчика
@@ -93,8 +174,9 @@
 
 **Меры снижения рисков:**
 - Поддержать переопределение host-портов через `.env` (`*_PORT`) без изменения container-port контрактов
-- Вести единый справочник портов в `deploy/README.md` и `docs/ports.md`
+- Вести единый справочник портов в `deploy/README.md` и Antora-документации (`admin-guide/deployment.adoc`)
 - Проверять конфигурацию портов в CI (`docker compose config` + smoke-check endpoints)
+- Фиксировать `COMPOSE_PROJECT_NAME` в каждом `.env.*` файле для изоляции namespace окружений
 
 ## Related ADRs
 
@@ -104,5 +186,7 @@
 - `ADR-IMPL.INTEGRATION.commenting-service-architecture`
 - `ADR-IMPL.OPS.ticket-management-system-architecture`
 - `ADR-DES.INFRA.otel-observability-strategy`
+- `ADR-IMPL.STACK.docker-adoption`
+- `ADR-DES.PROCESS.deployment-strategy-policy`
 
 ---

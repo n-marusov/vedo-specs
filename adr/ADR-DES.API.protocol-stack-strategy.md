@@ -26,7 +26,7 @@ API Gateway преобразует публичные REST/GraphQL/SPARQL ком
 | Импорт/экспорт онтологии | **REST** | Да |
 | Выполнение SPARQL/CYPHER (аналитика) | **REST** (с DoS-защитой, CircuitBreakerMiddleware) | Только для perform-операции |
 | Версионирование (commit/branch/merge/rollback) | **REST** | Да |
-| Управление орг. моделью (groups, projects, members, policies) | **REST** | Да |
+| Управление орг. моделью (groups, projects, members, visibility, policies) — см. [ADR-DES.API.organization-rest-endpoints.md](ADR-DES.API.organization-rest-endpoints.md) для канонического списка эндпоинтов | **REST** | Да |
 | Координация draft-состояния (dirty flag) | **REST** | Да (запланированный `/api/v1/ontologies/{id}/draft`) |
 | Совместное редактирование (collaboration) | WebSocket (через `realtime` gateway) | Да (broadcast изменений) |
 | Внутренние коммуникации сервисов | gRPC + protobuf | Да |

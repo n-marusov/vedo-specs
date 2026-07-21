@@ -88,8 +88,8 @@ REST-эндпоинты сами уже есть в `routes.go` (строки 12
 | Мутация | Целевой REST-эндпоинт | Обоснование |
 |---------|-------------------------|-------------|
 | `updateDraft(ontologyId, changes)` | `PUT /api/v1/ontologies/{id}/draft` | Координация dirty-state — write-операция на workspace, должна попадать под auth/audit/idempotency |
-| `updateMemberRole(ontologyId, userId, role)` | `PUT /api/v1/ontologies/{id}/members/{userId}` | Управление членством — запись в орг. модель, REST эндпоинт уже существует в routes.go |
-| `removeMember(ontologyId, userId)` | `DELETE /api/v1/ontologies/{id}/members/{userId}` | Удаление членства — REST эндпоинт уже существует в routes.go |
+| `updateMemberRole(ontologyId, userId, role)` | `PUT /api/v1/projects/{id}/members/{userId}` | Управление членством — запись в орг. модель, REST эндпоинт канонизирован в ADR-DES.API.organization-rest-endpoints.md |
+| `removeMember(ontologyId, userId)` | `DELETE /api/v1/projects/{id}/members/{userId}` | Удаление членства — REST эндпоинт канонизирован в ADR-DES.API.organization-rest-endpoints.md |
 
 После миграции `MutationRoot` в Rust помечается `EmptyMutation` (или удаляется из `Schema::build`).
 
@@ -137,7 +137,7 @@ REST-эндпоинты сами уже есть в `routes.go` (строки 12
 - [ ] `Mutation` root удалён из GraphQL-схемы (используется `EmptyMutation`)
 - [ ] `CreateClassDialog.vue` / `CreatePropertyDialog.vue` / `CreateIndividualDialog.vue` переведены на REST
 - [ ] `SPARQLPage.vue` переведён на REST `/api/v1/sparql`
-- [ ] OpenAPI (`openapi.json`) содержит все write-эндпоинты онтологии + версионирования
+- [ ] OpenAPI (`openapi.json`) содержит все write-эндпоинты онтологии + версионирования + project-scoped org endpoints (`/api/v1/projects/{id}/members|visibility|policies`, см. ADR-DES.API.organization-rest-endpoints.md)
 - [ ] Существует отдельная GraphQL-схема-документация (`graphql-schema.md`)
 - [ ] Интеграционный тест: REST entity CRUD возвращает 200/201, требует auth
 - [ ] Интеграционный тест: GraphQL-интроспекция не содержит `sparqlQuery` и entity mutations

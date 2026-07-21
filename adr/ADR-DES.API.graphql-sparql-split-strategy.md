@@ -34,7 +34,7 @@ GraphQL-схему строить вокруг фиксированных инт
 | Выполнение SPARQL-запросов | **REST** | POST | `/api/v1/sparql` (с DoS-защитой через CircuitBreakerMiddleware) |
 | Выполнение CYPHER-запросов | **REST** | POST | `/api/v1/cypher` (с DoS-защитой) |
 | Версионирование операций (commit, branch, merge, rollback) | **REST** | POST/DELETE | `/api/v1/versioning/...` |
-| Управление организацией (groups, projects, members, visibility, policies) | **REST** | CRUD | `/api/v1/groups`, `/api/v1/projects`, `/api/v1/ontologies/{id}/members` |
+| Управление организацией (groups, projects, members, visibility, policies) | **REST** | CRUD | `/api/v1/groups`, `/api/v1/projects`, `/api/v1/projects/{id}/members`, `/api/v1/projects/{id}/visibility`, `/api/v1/projects/{id}/policies` — см. [ADR-DES.API.organization-rest-endpoints.md](ADR-DES.API.organization-rest-endpoints.md) |
 | Координация draft-состояния (dirty flag) | **REST** | POST/PUT | `/api/v1/ontologies/{id}/draft` (запланированный REST-эндпоинт) |
 | Комментирование (вне графа онтологии) | **REST** | POST | (Эндпоинт rest через api-gateway, не через GraphQL mutations для онтологии) |
 | SHACL-валидация | **REST** | POST | (Эндпоинт валидации через REST) |

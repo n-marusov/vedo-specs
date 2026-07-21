@@ -226,6 +226,13 @@ graph LR
 | `REQ-NFR.SECURITY.organization-access-model` | `REQ-NFR.SECURITY.organization-access-model.md` | Модель доступа организации | NFR | Functionality | P0 |
 | `REQ-NFR.SECURITY.sca-sbom-gating` | `REQ-NFR.SECURITY.sca-sbom-gating.md` | SCA/SBOM gating | NFR | Supportability | P0 |
 | `REQ-NFR.SECURITY.cli-mfa` | `REQ-NFR.SECURITY.cli-mfa.md` | MFA в CLI | NFR | Functionality | P1 |
+| `REQ-NFR.SECURITY.enforced-in-code` | `REQ-NFR.SECURITY.enforced-in-code.md` | Enforcement границ в коде, не в промпте | NFR | Security | P0 |
+| `REQ-NFR.SECURITY.llm-tool-least-privilege` | `REQ-NFR.SECURITY.llm-tool-least-privilege.md` | Минимальные привилегии и изоляция инструментов LLM | NFR | Security | P0 |
+| `REQ-NFR.SECURITY.llm-write-human-approval` | `REQ-NFR.SECURITY.llm-write-human-approval.md` | HITL для LLM-сгенерированных изменений данных | NFR | Security | P0 |
+| `REQ-NFR.SECURITY.llm-content-screening` | `REQ-NFR.SECURITY.llm-content-screening.md` | Скрининг сторонних данных (indirect prompt injection) | NFR | Security | P1 |
+| `REQ-NFR.SECURITY.llm-output-screening` | `REQ-NFR.SECURITY.llm-output-screening.md` | Скрининг исходящих LLM-ответов (PII/canary/allow-list) | NFR | Security | P1 |
+| `REQ-NFR.SECURITY.llm-excessive-agency-control` | `REQ-NFR.SECURITY.llm-excessive-agency-control.md` | Контроль автономии LLM (Autonomy × Authority) | NFR | Security | P1 |
+| `REQ-NFR.SECURITY.llm-dependency-fail-mode` | `REQ-NFR.SECURITY.llm-dependency-fail-mode.md` | Fail-mode для внешних LLM-зависимостей | NFR | Reliability | P1 |
 
 ### Data / Storage
 
@@ -297,6 +304,7 @@ graph LR
 | `REQ-NFR.OPS.metrics` | `REQ-NFR.OPS.metrics.md` | Метрики | NFR | Supportability | P0 |
 | `REQ-NFR.OPS.log-retention` | `REQ-NFR.OPS.log-retention.md` | Хранение логов | NFR | Supportability | P0 |
 | `REQ-NFR.OPS.alert-fatigue` | `REQ-NFR.OPS.alert-fatigue.md` | Усталость от алертов | NFR | Supportability | P1 |
+| `REQ-NFR.OPS.llm-agent-observability` | `REQ-NFR.OPS.llm-agent-observability.md` | Специализированная observability для LLM-pipelines | NFR | Supportability | P1 |
 
 ### Performance
 
@@ -392,4 +400,4 @@ graph LR
 
 ---
 
-*Последнее обновление: 2026-05-30*
+*Последнее обновление: 2026-07-21*

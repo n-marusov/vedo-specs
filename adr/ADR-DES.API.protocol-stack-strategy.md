@@ -14,6 +14,27 @@ gRCP и protobuf-контракты обеспечивает высокую пр
 
 API Gateway преобразует публичные REST/GraphQL/SPARQL команды в gRPC/protobuf вызовы внутренних сервисов через GrpcProxy. Внутренние сервисы не публикуют функциональный REST API, за исключением management surface (`/health`, `/ready`).
 
+### Разделение ответственности протоколов (GraphQL = read, REST = write)
+
+Граница между GraphQL и REST обязательная и жёсткая. Подробности — в ADR-DES.API.graphql-sparql-split-strategy.md § «Разделение ответственности».
+
+| Ответственность | Протокол | Допускает mutation? |
+|------------------|----------|---------------------|
+| Навигация по графу онтологии (tree, class hierarchy, graph neighborhood, autocomplete) | **GraphQL** (Query only) | Нет |
+| Чтение версии (commits, branches, tags) | **GraphQL** (Query only) | Нет |
+| Запись графа онтологии (CRUD классов, свойств, индивидов) | **REST** | Да (POST/PUT/DELETE) |
+| Импорт/экспорт онтологии | **REST** | Да |
+| Выполнение SPARQL/CYPHER (аналитика) | **REST** (с DoS-защитой, CircuitBreakerMiddleware) | Только для perform-операции |
+| Версионирование (commit/branch/merge/rollback) | **REST** | Да |
+| Управление орг. моделью (groups, projects, members, policies) | **REST** | Да |
+| Координация draft-состояния (dirty flag) | **REST** | Да (запланированный `/api/v1/ontologies/{id}/draft`) |
+| Совместное редактирование (collaboration) | WebSocket (через `realtime` gateway) | Да (broadcast изменений) |
+| Внутренние коммуникации сервисов | gRPC + protobuf | Да |
+
+**GraphQL — строго read-only навигация (queries only).** GraphQL-мутации **запрещены в принципе** — для любых операций, изменяющих состояние, включая CRUD онтологических сущностей, координацию draft-state, управление членством. Все записи выполняются через REST (см. ADR-DES.API.rest-graphql-mutation-boundary.md). Узкие GraphQL mutations **как временное исключение не допускаются**.
+
+**SPARQL выполняется только через REST** `/api/v1/sparql` (см. ADR-DES.API.sparql-dos-protection.md § «Интеграция с API Gateway»). GraphQL-execution SPARQL запрещён — он обходит Circuit Breaker и rate limiting API Gateway.
+
 ## DDoS Mitigation Configuration (API Gateway)
 
 API Gateway реализует многоуровневую защиту от DDoS-атак:

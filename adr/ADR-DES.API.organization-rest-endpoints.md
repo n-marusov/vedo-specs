@@ -58,6 +58,8 @@ VEDO Core использует GitLab-like модель организации (
 
 Форма путей и пагинация соответствуют GitLab-базовой линии из `.ai-factory/references/gitlab-projects-groups-api.md` § «Pagination» (cursor-based, `per_page` ≤ 100). Transfer-семантика `PUT /projects/{id}/move` соответствует § «Transfer a project».
 
+**Примечание о миграции GraphQL → REST:** GET-эндпоинты `/groups`, `/groups/{id}`, `/projects`, `/projects/{id}`, `/projects/{id}/members` ранее обслуживались через GraphQL-резолверы (`groups`, `projects`, `members` queries). После tightening GraphQL to graph-only boundary эти чтения перенесены в REST и теперь являются каноническим контрактом. GraphQL больше не обслуживает не-графовые запросы — только навигацию по графу онтологии (class/property/individual + tree/neighborhood/autocomplete).
+
 ### Fork-семантика — VEDO extension
 
 `POST /api/v1/projects/{id}/fork` создаёт копию Project (с его paired Ontology) в пространстве текущего пользователя, устанавливая ссылку на исходный Project как upstream. Fork = базовый механизм для демо-проектов (F14.5) и социального хаба (F13.1).

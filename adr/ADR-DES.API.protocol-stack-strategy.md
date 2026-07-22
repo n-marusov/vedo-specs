@@ -21,7 +21,7 @@ API Gateway преобразует публичные REST/GraphQL/SPARQL ком
 | Ответственность | Протокол | Допускает mutation? |
 |------------------|----------|---------------------|
 | Навигация по графу онтологии (tree, class hierarchy, graph neighborhood, autocomplete) | **GraphQL** (Query only) | Нет |
-| Чтение версии (commits, branches, tags) | **GraphQL** (Query only) | Нет |
+| Чтение версии (commits, branches, tags) | **REST** | Нет |
 | Запись графа онтологии (CRUD классов, свойств, индивидов) | **REST** | Да (POST/PUT/DELETE) |
 | Импорт/экспорт онтологии | **REST** | Да |
 | Выполнение SPARQL/CYPHER (аналитика) | **REST** (с DoS-защитой, CircuitBreakerMiddleware) | Только для perform-операции |
@@ -31,7 +31,7 @@ API Gateway преобразует публичные REST/GraphQL/SPARQL ком
 | Совместное редактирование (collaboration) | WebSocket (через `realtime` gateway) | Да (broadcast изменений) |
 | Внутренние коммуникации сервисов | gRPC + protobuf | Да |
 
-**GraphQL — строго read-only навигация (queries only).** GraphQL-мутации **запрещены в принципе** — для любых операций, изменяющих состояние, включая CRUD онтологических сущностей, координацию draft-state, управление членством. Все записи выполняются через REST (см. ADR-DES.API.rest-graphql-mutation-boundary.md). Узкие GraphQL mutations **как временное исключение не допускаются**.
+**GraphQL — строго read-only навигация (queries only) ТОЛЬКО по графу онтологии.** GraphQL-схема НЕ содержит не-графовых резолверов (версионирование: commits, branches, tags; орг-модель: groups, projects, members; метаданные онтологии: ontology(id)). Все эти операции перенесены в REST. GraphQL-мутации **запрещены в принципе** — для любых операций, изменяющих состояние, включая CRUD онтологических сущностей, координацию draft-state, управление членством. Все записи выполняются через REST (см. ADR-DES.API.rest-graphql-mutation-boundary.md). Узкие GraphQL mutations **как временное исключение не допускаются**.
 
 **SPARQL выполняется только через REST** `/api/v1/sparql` (см. ADR-DES.API.sparql-dos-protection.md § «Интеграция с API Gateway»). GraphQL-execution SPARQL запрещён — он обходит Circuit Breaker и rate limiting API Gateway.
 

@@ -67,7 +67,6 @@
 | [US-metrics.analytics.complexity](US-metrics.analytics.complexity.md) | [UC-metrics.analytics.view-ontology-complexity-trends](use-cases.md#uc-metrics.analytics.view-ontology-complexity-trends) | P2 |
 | [US-io.xlsx.import-export](US-io.xlsx.import-export.md) | [UC-io.import.import-and-export-ontology-xlsx](use-cases.md#uc-io.import.import-and-export-ontology-xlsx) | P1 |
 | [US-io.export.docx](US-io.export.docx.md) | [UC-io.export.export-ontology-to-docx](use-cases.md#uc-io.export.export-ontology-to-docx) | P2 |
-| [US-io.forms.configure-templates](US-io.forms.configure-templates.md) | [UC-io.forms.configure-import-form-templates](use-cases.md#uc-io.forms.configure-import-form-templates) | P2 |
 | [US-io.reports.generate](US-io.reports.generate.md) | [UC-io.reports.generate-ontology-reports](use-cases.md#uc-io.reports.generate-ontology-reports) | P2 |
 | [US-support.tickets.create-track](US-support.tickets.create-track.md) | [UC-support.tickets.create-and-track-support-ticket](use-cases.md#uc-support.tickets.create-and-track-support-ticket) | P0 |
 | [US-support.knowledge.search](US-support.knowledge.search.md) | [UC-support.knowledge.search-knowledge-base-and-faq](use-cases.md#uc-support.knowledge.search-knowledge-base-and-faq) | P1 |

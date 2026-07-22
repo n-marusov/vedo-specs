@@ -3,6 +3,7 @@
 | ID пользовательской истории | ID прецедента использования | Приоритет |
 |---------------|-------------|-------------|
 | [US-editor.classes.create-parents](US-editor.classes.create-parents.md) | [UC-editor.classes.manage-class-lifecycle](use-cases.md#uc-editor.classes.manage-class-lifecycle) | P0 |
+| [US-projects.fork](US-projects.fork.md) | [UC-projects.fork](use-cases.md#uc-projects.fork) | P0 |
 | [US-editor.classes.edit](US-editor.classes.edit.md) | [UC-editor.classes.manage-class-lifecycle](use-cases.md#uc-editor.classes.manage-class-lifecycle) | P0 |
 | [US-editor.classes.delete](US-editor.classes.delete.md) | [UC-editor.classes.manage-class-lifecycle](use-cases.md#uc-editor.classes.manage-class-lifecycle) | P0 |
 | [US-editor.properties.create-object](US-editor.properties.create-object.md) | [UC-editor.properties.manage-property-lifecycle](use-cases.md#uc-editor.properties.manage-property-lifecycle) | P0 |

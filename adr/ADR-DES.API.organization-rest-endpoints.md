@@ -45,6 +45,7 @@ VEDO Core использует GitLab-like модель организации (
 | `PUT` | `/api/v1/projects/{id}` | Обновление Project |
 | `DELETE` | `/api/v1/projects/{id}` | Удаление Project (каскадно удаляет paired Ontology) |
 | `PUT` | `/api/v1/projects/{id}/move` | Перенос Project в другой Group |
+| `POST` | `/api/v1/projects/{id}/fork` | Создать fork Project (копия Project + Ontology с upstream link, см. Fork-семантика) |
 | `GET` | `/api/v1/projects/{id}/members` | Члены Project |
 | `POST` | `/api/v1/projects/{id}/members` | Добавить члена Project |
 | `PUT` | `/api/v1/projects/{id}/members/{userId}` | Изменить роль члена |
@@ -57,7 +58,38 @@ VEDO Core использует GitLab-like модель организации (
 
 Форма путей и пагинация соответствуют GitLab-базовой линии из `.ai-factory/references/gitlab-projects-groups-api.md` § «Pagination» (cursor-based, `per_page` ≤ 100). Transfer-семантика `PUT /projects/{id}/move` соответствует § «Transfer a project».
 
-### Project ↔ Ontology pairing (1:1) — VEDO extension
+### Fork-семантика — VEDO extension
+
+`POST /api/v1/projects/{id}/fork` создаёт копию Project (с его paired Ontology) в пространстве текущего пользователя, устанавливая ссылку на исходный Project как upstream. Fork = базовый механизм для демо-проектов (F14.5) и социального хаба (F13.1).
+
+**Правила fork:**
+
+1. **Создание:** новый Project создаётся с `upstream_project_id = <source>`, `visibility = private`. Пользователь становится Owner. Создаётся парная запись в `ontologies` (1:1).
+2. **Копирование содержимого:** через Versioning Service gRPC `CopyBranch(source_ontology_id, "main", new_ontology_id)`. Коммитное сообщение: `"Initial fork from <source>"`.
+3. **RBAC:** Любой пользователь с read-доступом к source Project может создать fork. Guest роль может fork публичные проекты (read access достаточен — fork не модифицирует source). Private — только members. Ответ 403 при отсутствии read-доступа (никогда 404, per BOLA policy).
+4. **Idempotency:** `Idempotency-Key` header required (как для других write-endpoints). При повторном запросе с тем же ключом возвращается тот же результат (existing fork).
+5. **Upstream связь:** `upstream_project_id` — nullable TEXT, FK → scopes(id) ON DELETE SET NULL. При удалении upstream fork остаётся (orphan fork — acceptable per Git model).
+6. **Audit:** событие `project.forked` с `object_id = new_project_id`, `reason = "forked from <source>"`.
+7. **Ограничения:** fork приватного проекта без read-доступа → 403. Fork несуществующего project ID → 403 (не 404).
+8. **Merge-upstream:** не входит в MVP. Post-MVP: pull updates from upstream через `POST /api/v1/projects/{id}/merge-upstream`.
+
+**Saga orchestration (auth-service org.go):**
+1. Verify read access to source Project (membership resolver)
+2. Create new Project scope + Ontology row
+3. Grant caller Owner role
+4. Call Versioning Service gRPC `CopyBranch`
+5. If Versioning fails: compensating action — delete new Project + Ontology (cascade), return error
+
+**Ответ 201:**
+```json
+{
+  "project_id": "uuid",
+  "ontology_id": "uuid",
+  "upstream_project_id": "uuid"
+}
+```
+
+Fork является **VEDO-специфичным расширением** поверх GitLab-модели. GitLab имеет `forked_from` как свойство Project, но не имеет explicit fork endpoint в REST API (fork создаётся через UI или import). Явный REST-endpoint для fork упрощает автоматизацию, CLI-интеграцию и механизм демо-проектов.
 
 VEDO сохраняет жёсткое соотношение 1:1: один Project содержит ровно одну Ontology, и наоборот. Это **VEDO-специфичное расширение** поверх GitLab-модели: в GitLab Project *является* репозиторием, в VEDO Project — это workspace-контейнер, а Ontology — его графовое содержимое. GitLab не имеет аналога этой связи (см. `.ai-factory/references/gitlab-projects-groups-api.md` § «Create a project» для GitLab-базовой линии).
 

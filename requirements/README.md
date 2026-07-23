@@ -221,6 +221,7 @@ graph LR
 | `REQ-NFR.SECURITY.parser-query-fuzz-gates` | `REQ-NFR.SECURITY.parser-query-fuzz-gates.md` | Фаззинг-гейты парсеров | NFR | Functionality | P1 |
 | `REQ-NFR.SECURITY.privileged-access-control` | `REQ-NFR.SECURITY.privileged-access-control.md` | Привилегированный доступ | NFR | Functionality | P0 |
 | `REQ-NFR.SECURITY.incident-secret-rotation` | `REQ-NFR.SECURITY.incident-secret-rotation.md` | Ротация секретов | NFR | Functionality | P0 |
+| `REQ-NFR.SECURITY.jwt-key-mismatch` | `REQ-NFR.SECURITY.jwt-key-mismatch.md` | Регрессионный контроль совпадения JWT-ключей в test-окружении | NFR | Functionality | P0 |
 | `REQ-NFR.SECURITY.emergency-policy-disable` | `REQ-NFR.SECURITY.emergency-policy-disable.md` | Аварийное отключение политик | NFR | Reliability | P0 |
 | `REQ-NFR.SECURITY.authorization-regression-gates` | `REQ-NFR.SECURITY.authorization-regression-gates.md` | Гейты регрессии авторизации | NFR | Functionality | P0 |
 | `REQ-NFR.SECURITY.organization-access-model` | `REQ-NFR.SECURITY.organization-access-model.md` | Модель доступа организации | NFR | Functionality | P0 |

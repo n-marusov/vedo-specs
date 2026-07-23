@@ -157,3 +157,4 @@ ADR-<LEVEL>.<AREA>.<semantic-tag>
 | `ADR-DES.SECURITY.nl-query-opt-in-mandate` | Opt-in для NL запросов | Принято | 2026-05-24 |
 | `ADR-DES.INFRA.ai-orchestration-service-strategy` | Выделение AI-оркестрации из Gateway | Предложено | 2026-07-16 |
 | `ADR-DES.API.organization-rest-endpoints` | Канонический REST-контракт organization model | Принято | 2026-07-21 |
+| `ADR-DES.DATA.uuid-identifiers-for-groups-projects-mandate` | UUID идентификаторы для групп и проектов | Принято | 2026-07-23 |

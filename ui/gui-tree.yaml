@@ -403,6 +403,7 @@ gui:
     - Create Class
     - Create Property
     - Create Individual
+    - Create Group
     - Annotation
     - Import
     - MFA Challenge

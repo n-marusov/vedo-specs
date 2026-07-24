@@ -89,3 +89,4 @@
 | [US-io.document.extract-structured](US-io.document.extract-structured.md) | [UC-io.import.import-structured-data](use-cases.md#uc-io.import.import-structured-data) | P1 |
 | [US-io.document.preview-sequence](US-io.document.preview-sequence.md) | [UC-io.import.extract-ontology-from-document](use-cases.md#uc-io.import.extract-ontology-from-document) | P1 |
 | [US-io.document.batch-extract](US-io.document.batch-extract.md) | [UC-io.import.batch-extract-ontology](use-cases.md#uc-io.import.batch-extract-ontology) | P2 |
+| [US-org.groups.create](US-org.groups.create.md) | [UC-org.groups.manage-group-lifecycle](use-cases.md#uc-org.groups.manage-group-lifecycle) | P0 |

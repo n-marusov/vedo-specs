@@ -1,7 +1,7 @@
 # ADR-IMPL.STACK.port-mapping-strategy
 
-**Дата:** 2026-05-19 (amended 2026-07-20)
-**Статус:** PROPOSED
+**Дата:** 2026-05-19 (amended 2026-07-20, implemented 2026-07-24)
+**Статус:** ACCEPTED
 
 ## Контекст
 
@@ -11,7 +11,8 @@
 - В `ADR-DES.INFRA.monolith-vs-microservices` зафиксирована микросервисная декомпозиция и внутренние межсервисные вызовы через gRPC/protobuf.
 - В `ADR-DES.API.protocol-stack-strategy` зафиксирован протокольный контракт: внутренний функциональный контур сервисов через gRPC, внешний контур через REST/GraphQL/WebSocket, API Gateway как единый фасад.
 - В `ADR-IMPL.INTEGRATION.commenting-service-architecture` зафиксирован внешний WebSocket endpoint комментариев `wss://<host>/ws/comments` и REST-доступ через API Gateway.
-- В `deploy/docker-compose.yml` уже используются публичные порты `3000` (frontend) и `8080` (API Gateway), а также dev-публикация инфраструктурных портов (`7474/7687`, `5432`, `6379`, `5672/15672`).
+- В `deploy/docker-compose.yml` уже используются публичные порты `3000` (frontend), `3002` (publish-browse-ui) и `8080` (API Gateway), а также dev-публикация инфраструктурных портов (`7474/7687`, `5432`, `6379`, `5672/15672`).
+- Внутренние сервисы (`versioning-service`, `auth-service`, `metrics-service`, `publisher-service`, `public-browse-api`, `commenting-service`, `ticket-api`, `ticket-classifier`, `ticket-telemetry-listener`, `ticket-notifier`, `document-extractor`) ранее публиковались на host через `ports`. В процессе имплементации ADR (2026-07-24) переведены на `expose` в рамках bridge-сети Docker.
 - В `deploy/docker-compose.observability.yml` уже используются порты observability: `9090` (Prometheus), `3100` (Loki), `3200` (Tempo), `4317/4318` (OTLP), `8888/8889` (otel-collector); Grafana опубликована как `3001:3000` из-за занятости `3000` фронтендом.
 - В `deploy/README.md` зафиксированы пользовательские endpoints (`http://localhost:3000`, `http://localhost:8080/health`, `http://localhost:3001`, `http://localhost:9090`).
 - В `requirements/REQ-CON.INFRA.deployment-strategy.md` требования к конкретным номерам портов не найдены (документ про rollout-стратегии).

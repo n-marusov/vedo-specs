@@ -113,7 +113,9 @@ Auth-service использует строковые scope-идентифика�
 
 ### Idempotency
 
-Все write-эндпоинты принимают заголовок `Idempotency-Key` (REQ-FUN.API.write-idempotency, `ADR-DES.API.write-idempotency-strategy`). Эндпоинты members, visibility и policies **требуют** его наличия — отсутствие ключа возвращает `400 INVALID_IDEMPOTENCY_KEY`. Это предотвращает duplicate-вставки членства и повторные изменения visibility/policies при сетевых ретрях.
+Все write-эндпоинты принимают заголовок `Idempotency-Key` (REQ-FUN.API.write-idempotency, `ADR-DES.API.write-idempotency-strategy`). Эндпоинты **groups** (создание, обновление, удаление), members, visibility и policies **требуют** его наличия — отсутствие ключа возвращает `400 INVALID_IDEMPOTENCY_KEY`. Это предотвращает:
+- duplicate-создание групп при двойном клике / network retry;
+- duplicate-вставки членства и повторные изменения visibility/policies при сетевых ретрях.
 
 ### RBAC
 

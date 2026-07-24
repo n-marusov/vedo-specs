@@ -1006,3 +1006,7 @@ coverage:
 | Версия | Дата | Автор | Изменения |
 |--------|------|-------|-----------|
 | v1.0 | 2026-05-16 | Security Architect | Initial specification |
+| v1.1 | 2026-07-25 | Agent | Добавлены BFLA-тесты для lowercase realm-ролей Keycloak:
+  `TestKeycloak_LowercaseRealmRole_OwnerCanPost` (owner → POST /groups — 200),
+  `TestKeycloak_LowercaseRealmRole_ViewerBlocked` (viewer → DELETE — 403).
+  Исправлен case-sensitive lookup ролей в API Gateway (`auth.go`). |

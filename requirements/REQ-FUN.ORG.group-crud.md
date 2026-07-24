@@ -28,7 +28,7 @@
 | **Поле parent_id** | Optional. UUID родительской группы. Если указан — создаётся подгруппа. |
 | **Поле usage** | Optional. `team` или `solo`. |
 | **Поле invite_members** | Optional. Email-адреса приглашаемых участников. |
-| **Роль для создания** | Owner. |
+| **Роль для создания** | Editor или выше (realm-роль Keycloak). |
 
 **HTTP:** `POST /api/v1/groups` → `201 Created` с объектом группы.
 
@@ -99,7 +99,8 @@
 - [ ] Создание группы с несуществующим parent_id возвращает `SCOPE_NOT_FOUND`.
 - [ ] Создание группы с глубиной >5 возвращает `HIERARCHY_DEPTH_EXCEEDED`.
 - [ ] Создание группы с циклическим parent_id возвращает `CYCLE_DETECTED`.
-- [ ] Пользователь без роли Owner не может создать группу (`FORBIDDEN_INSUFFICIENT_ROLE`).
+- [ ] Пользователь без роли Editor или выше не может создать группу (`FORBIDDEN_INSUFFICIENT_ROLE`).
+- [ ] Realm-роли Keycloak обрабатываются case-insensitive: `"owner"`, `"Owner"`, `"OWNER"` — все разрешаются в weight 3.
 - [ ] Visibility enum валидируется: допускаются только Private, Internal, Public.
 - [ ] Идемпотентность: повторный `POST /groups` с тем же `Idempotency-Key` возвращает существующую группу.
 
@@ -111,5 +112,17 @@
 - **ADR-ID:** `ADR-DES.DATA.uuid-identifiers-for-groups-projects-mandate`
 - **GUI Design:** `specs/ui/gui-tree.yaml` — GroupsPage + Create Group dialog
 - **Frontend:** `GroupsPage.vue`, `CreateGroupDialog.vue`, `org.ts`
-- **API Gateway:** `routes.go`, `handlers/org_handler.go`, `proxy/grpc_org_client.go`
+- **API Gateway:** `routes.go`, `handlers/org_handler.go`, `proxy/grpc_org_client.go`, `auth/auth.go`
 - **Auth-service:** `org/org.go`, `org/types.go`, `org/store.go`, `org/postgres_store.go`
+
+## История изменений
+
+| Версия | Дата | Автор | Изменения |
+|--------|------|-------|-----------|
+| v1.0 | 2026-05-16 | Security Architect | Initial specification |
+| v1.1 | 2026-07-25 | Agent | Исправлена case-sensitive проверка ролей в API Gateway. Realm-роли Keycloak
+  (`"owner"`, `"editor"`, `"viewer"`, etc.) — нижний регистр. Карта `roleWeight`
+  в `auth.go` теперь использует lowercase-ключи. Добавлены недостающие роли:
+  `"reviewer"` (weight 1), `"admin"` (weight 3), `"service"` (weight 3).
+  Регрессионные тесты: `TestKeycloak_LowercaseRealmRole_OwnerCanPost`,
+  `TestKeycloak_LowercaseRealmRole_ViewerBlocked`.

@@ -1,52 +1,65 @@
 <a id="us-org.groups.create"></a>
-# US-org.groups.create: Create group as a user
+# US-org.groups.create: Создание группы
 
 ```gherkin
 @US-org.groups.create @UC-org.groups.manage-group-lifecycle @P0 @organization @groups
-Feature: US-org.groups.create Create group as a user
+Feature: US-org.groups.create Создание группы
 
   Background:
-    Given user is authenticated as "Owner"
+    Дано пользователь аутентифицирован как "Owner"
 
-  Scenario: User creates a private group with name and optional member invite
-    When user navigates to "Groups" page
-    And clicks "New group"
-    Then the "Create group" dialog opens
-    When user enters group name "Research Team"
-    And selects visibility "Private"
-    And optionally enters email "colleague@company.com" to invite a member
-    And clicks "Create group"
-    Then a new group "Research Team" is created with visibility "Private"
-    And the user becomes Owner of the group
-    And the group appears in the groups list
-    And the group row shows member count = 1
+  Scenario: Пользователь создаёт приватную группу верхнего уровня
+    Когда пользователь переходит на страницу "Groups"
+    И нажимает "New group"
+    Тогда открывается страница "New group" по адресу "/dashboard/groups/new"
+    Когда пользователь вводит название группы "Research Team"
+    И slug автоматически генерируется как "research-team"
+    И выбирает уровень видимости "Private"
+    И нажимает "Create group"
+    Тогда создаётся новая группа "Research Team" с видимостью "Private"
+    И пользователь становится Owner созданной группы
+    И отображается Toast-уведомление "Group \"Research Team\" was successfully created."
+    И происходит перенаправление на страницу группы "/dashboard/groups/:id"
+    И группа отображается в списке групп с человеко-читаемым именем "Research Team"
 
-  Scenario: User creates a subgroup under an existing group
-    Given a group "Engineering" exists
-    When user creates a new group with name "Frontend"
-    And selects parent group "Engineering"
-    Then a subgroup "Frontend" is created under "Engineering"
-    And the subgroup inherits visibility from the parent group
-    And expanding "Engineering" reveals "Frontend" as a child row
+  Scenario: Пользователь создаёт подгруппу под существующей родительской группой
+    Дано существует группа "Engineering"
+    Когда пользователь переходит по адресу "/dashboard/groups/new?parent_id=<uuid>"
+    Тогда открывается страница "New group"
+    И отображается информация о родительской группе "Engineering"
+    И поле видимости заблокировано с унаследованным значением от родительской группы
+    Когда пользователь вводит название подгруппы "Frontend"
+    И нажимает "Create group"
+    Тогда создаётся подгруппа "Frontend" под группой "Engineering"
+    И подгруппа наследует видимость от родительской группы
+    И при раскрытии группы "Engineering" подгруппа "Frontend" отображается как дочерняя
 
-  Scenario: User attempts to create group with empty name
-    When user opens "Create group" dialog
-    And leaves group name empty
-    And clicks "Create group"
-    Then the dialog shows validation error "Group name is required"
-    And no group is created
+  Scenario: Пользователь пытается создать группу с пустым именем
+    Когда пользователь находится на странице "New group"
+    И оставляет поле названия группы пустым
+    И нажимает "Create group"
+    Тогда отображается ошибка валидации "Group name is required"
+    И группа не создаётся
 
-  Scenario: User selects public visibility for an open group
-    When user creates a group with name "Open Research"
-    And selects visibility "Public"
-    Then the group "Open Research" is created with visibility "Public"
-    And the group row shows a Globe visibility icon
-    And any unauthenticated user can view the group page
+  Scenario: Пользователь выбирает публичную видимость для открытой группы верхнего уровня
+    Когда пользователь создаёт группу с именем "Open Research"
+    И выбирает уровень видимости "Public"
+    Тогда группа "Open Research" создаётся с видимостью "Public"
+    И в строке группы отображается иконка Globe (публичная видимость)
+    И любой неаутентифицированный пользователь может просматривать страницу группы
 
-  Scenario: User selects internal visibility
-    When user creates a group with name "Internal Project"
-    And selects visibility "Internal"
-    Then the group "Internal Project" is created with visibility "Internal"
-    And any authenticated user can view the group
-    But external users cannot access it
+  Scenario: Пользователь выбирает внутреннюю видимость
+    Когда пользователь создаёт группу с именем "Internal Project"
+    И выбирает уровень видимости "Internal"
+    Тогда группа "Internal Project" создаётся с видимостью "Internal"
+    И любой аутентифицированный пользователь может просматривать группу
+    Но внешние пользователи не имеют доступа
+
+  Scenario: Пользователь создаёт подгруппу без явного указания видимости
+    Дано существует группа "Engineering" с видимостью "Internal"
+    Когда пользователь переходит на создание подгруппы под "Engineering"
+    И вводит название подгруппы "Backend"
+    И не выбирает уровень видимости
+    И нажимает "Create group"
+    Тогда подгруппа "Backend" создаётся с унаследованной видимостью "Internal" от родительской группы
 ```

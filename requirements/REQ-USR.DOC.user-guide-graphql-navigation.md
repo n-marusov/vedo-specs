@@ -66,54 +66,50 @@ query GetClassChildren($classId: ID!, $after: String) {
 
 Если `hasNextPage = true`, клиент передаёт `endCursor` в следующем запросе как `after`.
 
-## Динамические свойства
+## Значения свойств
 
-Поле `propertyValues` возвращает массив объектов, где каждое значение связано с конкретным свойством:
+Значения пользовательских свойств возвращаются через типизированные поля на типе `Individual`:
+
+- `literalValues` — свойства-литералы (DatatypeProperty): строка, число, дата.
+- `referenceValues` — ссылочные свойства (ObjectProperty): связь с другим индивидом.
 
 ```graphql
-query GetEntityProperties($entityId: ID!) {
-  entity(id: $entityId) {
+query GetIndividualProperties($ontologyId: ID!, $individualId: ID!) {
+  individual(ontologyId: $ontologyId, individualId: $individualId) {
     id
     label
-    ... on Individual {
-      propertyValues(first: 50) {
-        edges {
-          node {
-            property { id label }
-            values {
-              ... on LiteralValue { value datatype language }
-              ... on EntityValue { entity { id label type } }
-            }
-          }
-        }
-      }
+    literalValues {
+      propertyId
+      propertyLabel
+      value
+      xsdType
+    }
+    referenceValues {
+      propertyId
+      propertyLabel
+      targetId
+      targetLabel
     }
   }
 }
 ```
 
-Такой формат нужен потому, что пользователи создают собственные свойства, неизвестные на момент компиляции GraphQL-схемы.
+Такой формат нужен потому, что пользователи создают собственные свойства, неизвестные на момент компиляции GraphQL-схемы — они не регистрируются как статические поля, а возвращаются через контейнеры `literalValues` и `referenceValues`.
 
-## Подграф для 3D-навигатора
+## Графовая окрестность для 2D/3D-навигатора
 
-Для 3D-сцены клиент запрашивает фокусный узел и ограниченную глубину обхода:
+Для 2D/3D-сцены клиент запрашивает фокусный узел и ограниченную глубину обхода через запрос `graphNeighborhood`:
 
 ```graphql
-query GetSubgraph($classId: ID!, $depth: Int = 2, $after: String) {
-  subgraph(focusId: $classId, depth: $depth, first: 100, after: $after) {
-    edges {
-      cursor
-      node {
-        node { id label type }
-        predicate { id label }
-      }
-    }
-    pageInfo { endCursor hasNextPage }
+query GetNeighborhood($ontologyId: ID!, $classId: ID!, $depth: Int = 2) {
+  graphNeighborhood(ontologyId: $ontologyId, classId: $classId, depth: $depth) {
+    nodes { id label entityType }
+    edges { sourceId targetId propertyId propertyLabel }
   }
 }
 ```
 
-Клиент должен начинать с небольшой глубины и дозагружать соседние связи при клике, раскрытии узла или прокрутке списка.
+Клиент должен начинать с небольшой глубины и дозагружать соседние связи при клике, раскрытии узла или прокрутке списка. `graphNeighborhood` возвращает все узлы и рёбра одной порцией (в пределах `depth`), без курсорной пагинации — для визуализации это эффективнее, чем постраничная подгрузка.
 
 ## Ограничения
 

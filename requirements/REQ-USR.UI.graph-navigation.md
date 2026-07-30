@@ -307,15 +307,26 @@ GET /api/v1/ontologies/{ontologyId}/search?q={query}&type={class|property}
 
 Для фронтенда используется **GraphQL** (через Apollo Client) для получения фрагментов онтологии. Это основной API навигации по графу: клиент запрашивает только нужные поля, подгружает порции графа по курсорам и раскрывает связи по мере пользовательского действия.
 
-Схема не пытается статически описать каждое пользовательское свойство онтологии. Вместо этого она фиксирует базовые интерфейсы `Entity`, `Class`, `Individual`, `Property`, а динамические свойства и связи возвращает через контейнеры `propertyValues`, `outgoingEdges` и `incomingEdges`.
+GraphQL в VEDO Core — **строго read-only навигация по графу онтологии** (11 резолверов). Все мутации, версионирование, орг-модель, SPARQL, метрики и метаданные онтологии вынесены в REST. Подробнее: ADR-DES.API.graphql-sparql-split-strategy.md, ADR-DES.API.rest-graphql-mutation-boundary.md.
+
+Схема не пытается статически описать каждое пользовательское свойство онтологии. Вместо этого фиксируются базовые типы `Entity`, `Class`, `Individual`, `Property`, а значения пользовательских свойств возвращаются через поля `literalValues` (свойства-литералы) и `referenceValues` (ссылочные свойства) на типе `Individual`. Навигация по графу выполняется через специализированные запросы: `classTree` (иерархия), `classAncestors` (хлебные крошки), `classDescendants` (поддерево), `graphNeighborhood` (соседние узлы и рёбра).
+
+Все списки используют **Relay Cursor Connections** — пагинацию на основе курсоров (`first`, `after`, `edges`, `pageInfo`, `totalCount`). Offset-пагинация не используется (см. REQ-FR-GRAPH-NAV-0004).
 
 **Схема:**
 
 ```graphql
+# ═══════════════════════════════════════════════════════════════════
+# VEDO Core — GraphQL: только навигация по графу онтологии
+# ═══════════════════════════════════════════════════════════════════
+
+# ── Entity interface ──────────────────────────────────────────────
+
 interface Entity {
   id: ID!
-  label(lang: String): String!
-  type: EntityType!
+  label: String!
+  comment: String
+  entityType: EntityType!
 }
 
 enum EntityType {
@@ -324,213 +335,321 @@ enum EntityType {
   PROPERTY
 }
 
-type Ontology {
-  id: ID!
-  name: String!
-  rootClasses(first: Int = 50, after: String): ClassConnection!
-  classes(first: Int = 50, after: String): ClassConnection!
-  properties(first: Int = 50, after: String): PropertyConnection!
-}
+# ── Class ─────────────────────────────────────────────────────────
 
 type Class implements Entity {
   id: ID!
-  label(lang: String): String!
-  comment(lang: String): String
-  type: EntityType!
-  parents(first: Int = 50, after: String): ClassConnection!
-  children(first: Int = 50, after: String): ClassConnection!
-  propertyValues(first: Int = 50, after: String): PropertyValueConnection!
-  outgoingEdges(relationType: String, first: Int = 50, after: String): GraphEdgeConnection!
-  incomingEdges(relationType: String, first: Int = 50, after: String): GraphEdgeConnection!
-  isAbstract: Boolean
-  isDeprecated: Boolean
+  label: String!
+  comment: String
+  entityType: EntityType!
+  parents: [String!]!
+  children: [String!]!
+  isAbstract: Boolean!
+  isDeprecated: Boolean!
 }
+
+type ClassSummary {
+  id: ID!
+  label: String!
+  comment: String
+  parents: [String!]!
+}
+
+type ClassTreeNode {
+  id: ID!
+  label: String!
+  comment: String
+  children: [ClassTreeNode!]!
+}
+
+type BreadcrumbItem {
+  id: ID!
+  label: String!
+}
+
+# ── Property ──────────────────────────────────────────────────────
 
 type Property implements Entity {
   id: ID!
-  label(lang: String): String!
-  type: EntityType!
-  propertyKind: PropertyKind!
-  domain: [Class!]!
-  range: [Entity!]!
-  isMultilingual: Boolean
+  label: String!
+  comment: String
+  entityType: EntityType!
+  propertyType: PropertyType!
+  domains: [String!]!
+  ranges: [String!]!
+  xsdType: String
+  characteristics: PropertyCharacteristics!
+  annotations: [Annotation!]!
 }
 
-enum PropertyKind {
+enum PropertyType {
   OBJECT
   DATATYPE
   ANNOTATION
 }
 
+type PropertyCharacteristics {
+  functional: Boolean!
+  inverseFunctional: Boolean!
+  transitive: Boolean!
+  symmetric: Boolean!
+}
+
+type Annotation {
+  propertyIri: String!
+  value: String!
+}
+
+type PropertySummary {
+  id: ID!
+  label: String!
+  propertyType: PropertyType!
+  xsdType: String
+  domains: [String!]!
+}
+
+# ── Individual ────────────────────────────────────────────────────
+
 type Individual implements Entity {
   id: ID!
-  label(lang: String): String!
-  type: EntityType!
-  classes(first: Int = 50, after: String): ClassConnection!
-  propertyValues(first: Int = 50, after: String): PropertyValueConnection!
-  outgoingEdges(relationType: String, first: Int = 50, after: String): GraphEdgeConnection!
-  incomingEdges(relationType: String, first: Int = 50, after: String): GraphEdgeConnection!
+  label: String!
+  comment: String
+  entityType: EntityType!
+  classId: String!
+  classLabel: String!
+  literalValues: [LiteralValue!]!
+  referenceValues: [ReferenceValue!]!
 }
 
-type PropertyValue {
-  property: Property!
-  values: [PropertyValueItem!]!
+type IndividualSummary {
+  id: ID!
+  label: String!
+  comment: String
+  classId: String!
+  classLabel: String!
 }
-
-union PropertyValueItem = LiteralValue | EntityValue
 
 type LiteralValue {
+  propertyId: String!
+  propertyLabel: String!
   value: String!
-  datatype: String
-  language: String
+  xsdType: String
+  valueId: String
 }
 
-type EntityValue {
-  entity: Entity!
+type ReferenceValue {
+  propertyId: String!
+  propertyLabel: String!
+  targetId: String!
+  targetLabel: String!
+  edgeId: String
 }
 
-type Query {
-  ontology(id: ID!): Ontology
-  class(id: ID!): Class
-  entity(id: ID!): Entity
-  searchOntology(query: String!, first: Int = 20, after: String): EntityConnection!
-  subgraph(focusId: ID!, depth: Int = 2, first: Int = 100, after: String): GraphEdgeConnection!
+# ── Connections (Relay Cursor) ────────────────────────────────────
+
+type PageInfo {
+  startCursor: String
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}
+
+type ClassConnection {
+  edges: [ClassEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ClassEdge {
+  cursor: String!
+  node: ClassSummary!
+}
+
+type PropertyConnection {
+  edges: [PropertyEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PropertyEdge {
+  cursor: String!
+  node: PropertySummary!
+}
+
+type IndividualConnection {
+  edges: [IndividualEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type IndividualEdge {
+  cursor: String!
+  node: IndividualSummary!
+}
+
+# ── Graph Neighborhood ────────────────────────────────────────────
+
+type GraphNeighborhood {
+  nodes: [GraphNode!]!
+  edges: [GraphEdge!]!
+}
+
+type GraphNode {
+  id: ID!
+  label: String!
+  entityType: EntityType!
 }
 
 type GraphEdge {
-  node: Entity!
-  predicate: Property!
+  sourceId: ID!
+  targetId: ID!
+  propertyId: ID!
+  propertyLabel: String!
 }
 
-type PageInfo {
-  endCursor: String
-  hasNextPage: Boolean!
-}
+# ── Query Root (11 резолверов) ────────────────────────────────────
 
-type ClassConnection { edges: [ClassEdge!]!, pageInfo: PageInfo! }
-type ClassEdge { cursor: String!, node: Class! }
-type PropertyConnection { edges: [PropertyEdge!]!, pageInfo: PageInfo! }
-type PropertyEdge { cursor: String!, node: Property! }
-type EntityConnection { edges: [EntityEdge!]!, pageInfo: PageInfo! }
-type EntityEdge { cursor: String!, node: Entity! }
-type PropertyValueConnection { edges: [PropertyValueEdge!]!, pageInfo: PageInfo! }
-type PropertyValueEdge { cursor: String!, node: PropertyValue! }
-type GraphEdgeConnection { edges: [GraphEdgeResult!]!, pageInfo: PageInfo! }
-type GraphEdgeResult { cursor: String!, node: GraphEdge! }
+type Query {
+  # Точечные lookup-ы
+  class(ontologyId: ID!, classId: ID!): Class
+  property(ontologyId: ID!, propertyId: ID!): Property
+  individual(ontologyId: ID!, individualId: ID!): Individual
+
+  # Списки — cursor pagination (Relay Connection)
+  classes(
+    ontologyId: ID!
+    q: String
+    first: Int = 20
+    after: String
+  ): ClassConnection!
+
+  properties(
+    ontologyId: ID!
+    q: String
+    propertyType: PropertyType
+    first: Int = 20
+    after: String
+  ): PropertyConnection!
+
+  individuals(
+    ontologyId: ID!
+    classId: ID!
+    q: String
+    first: Int = 20
+    after: String
+  ): IndividualConnection!
+
+  # Иерархия классов
+  classTree(ontologyId: ID!): [ClassTreeNode!]!
+  classAncestors(ontologyId: ID!, classId: ID!): [BreadcrumbItem!]!
+  classDescendants(
+    ontologyId: ID!
+    classId: ID!
+    maxDepth: Int = 10
+  ): [ClassTreeNode!]!
+
+  # Визуализация графа
+  graphNeighborhood(
+    ontologyId: ID!
+    classId: ID!
+    depth: Int = 2
+  ): GraphNeighborhood!
+
+  # Поиск
+  autocompleteClasses(
+    ontologyId: ID!
+    q: String!
+    limit: Int = 20
+  ): [ClassSummary!]!
+}
 ```
 
-**Пример запроса для 3D-навигатора:**
+**Пример: получение класса с иерархией и neighbourhood:**
 
 ```graphql
-query GetSubgraph($classId: ID!, $depth: Int = 2, $after: String) {
-  class(id: $classId) {
+query GetClassContext($ontologyId: ID!, $classId: ID!) {
+  class(ontologyId: $ontologyId, classId: $classId) {
     id
     label
-    parents(first: 20) {
-      edges { node { id label } }
-      pageInfo { endCursor hasNextPage }
-    }
-    children(first: 20, after: $after) {
-      edges { cursor node { id label } }
-      pageInfo { endCursor hasNextPage }
-    }
-    outgoingEdges(relationType: "subClassOf", first: 50) {
-      edges {
-        node {
-          node { id label type }
-          predicate { id label }
-        }
-      }
-      pageInfo { endCursor hasNextPage }
-    }
+    entityType
+    isAbstract
+    isDeprecated
+    parents
+    children
   }
-  subgraph(focusId: $classId, depth: $depth, first: 100, after: $after) {
-    edges {
-      cursor
-      node {
-        node { id label type }
-        predicate { id label }
-      }
-    }
-    pageInfo { endCursor hasNextPage }
+  classAncestors(ontologyId: $ontologyId, classId: $classId) {
+    id
+    label
+  }
+  graphNeighborhood(ontologyId: $ontologyId, classId: $classId, depth: 2) {
+    nodes { id label entityType }
+    edges { sourceId targetId propertyId propertyLabel }
   }
 }
 ```
 
-**Настройка Apollo Client (Vue 3):**
-
-```typescript
-// src/apollo/client.ts
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client/core'
-
-const httpLink = createHttpLink({ uri: '/graphql' })
-
-export const apolloClient = new ApolloClient({
-  link: httpLink,
-  cache: new InMemoryCache({
-    typePolicies: {
-      Class: { keyFields: ['id'] },
-      Individual: { keyFields: ['id'] },
-      Property: { keyFields: ['id'] },
-    }
-  })
-})
-```
-
-**Composable для загрузки графа:**
-
-```typescript
-// src/composables/useOntologyGraph.ts
-import { useQuery, useSubscription } from '@apollo/client/vue3'
-import gql from 'graphql-tag'
-
-const CLASS_GRAPH_QUERY = gql`
-  query ClassGraph($focusId: ID!, $depth: Int = 2, $after: String) {
-    subgraph(focusId: $focusId, depth: $depth, first: 100, after: $after) {
-      edges {
-        cursor
-        node {
-          node { id label type }
-          predicate { id label }
-        }
-      }
-      pageInfo { endCursor hasNextPage }
-    }
-  }
-`
-
-export function useOntologyGraph(classId: Ref<string>) {
-  const { result, loading, error } = useQuery(CLASS_GRAPH_QUERY, () => ({
-    focusId: classId.value,
-    depth: 3
-  }))
-  
-  return { edges: computed(() => result.value?.subgraph?.edges ?? []),
-           pageInfo: computed(() => result.value?.subgraph?.pageInfo),
-           loading, error }
-}
-```
-
-**Обновления в реальном времени (subscriptions):**
+**Пример: список классов с курсорной пагинацией:**
 
 ```graphql
-type Subscription {
-  classUpdated(id: ID!): Class!
-  ontologyChanged(ontologyId: ID!): OntologyChange!
+query ListClasses($ontologyId: ID!, $q: String, $after: String) {
+  classes(ontologyId: $ontologyId, q: $q, first: 20, after: $after) {
+    edges {
+      cursor
+      node { id label parents }
+    }
+    pageInfo { endCursor hasNextPage }
+    totalCount
+  }
+}
+```
+
+**Пример: индивид с полными значениями свойств:**
+
+```graphql
+query GetIndividual($ontologyId: ID!, $individualId: ID!) {
+  individual(ontologyId: $ontologyId, individualId: $individualId) {
+    id
+    label
+    classId
+    classLabel
+    literalValues {
+      propertyId
+      propertyLabel
+      value
+      xsdType
+    }
+    referenceValues {
+      propertyId
+      propertyLabel
+      targetId
+      targetLabel
+    }
+  }
 }
 ```
 
 ## Поток данных (GraphQL)
 
 ```
-User selects class
-  → useOntologyGraph(classId) composable
-  → Apollo Client sends GraphQL query with depth, first and after cursor
+User selects class in ClassTree
+  → Apollo Client sends classTree / classDescendants query
   → API Gateway routes to Ontology Service (Rust)
   → Cypher query to Neo4j
-  → Response: connection edges + pageInfo { endCursor, hasNextPage }
+  → Response: ClassTreeNode[] with nested children
   → Apollo cache updated
   → Components re-render with reactive data
+
+User clicks node in graph visualization
+  → Apollo Client sends graphNeighborhood query (depth, classId)
+  → Ontology Service traverses Neo4j graph
+  → Response: GraphNeighborhood { nodes[], edges[] }
+  → Vue Flow / Three.js renders nodes and edges
+
+User opens individual details
+  → Apollo Client sends individual query with literalValues, referenceValues
+  → Ontology Service fetches property values from Neo4j
+  → Response: Individual with full property assignments
+  → DetailPanel renders property table
 ```
 
 ## Стратегия кэширования
@@ -555,7 +674,7 @@ GraphView (page)
 │   ├── PropertiesTable
 │   └── IndividualsPreview
 ├── GraphCanvas2D (@vue-flow)
-│   └── GraphNodes (loaded via classGraph query)
+│   └── GraphNodes (loaded via graphNeighborhood query)
 ├── GraphCanvas3D (Three.js)
 └── Breadcrumb
 ```

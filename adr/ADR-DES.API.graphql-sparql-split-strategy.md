@@ -26,7 +26,7 @@ GraphQL-схему строить вокруг фиксированных инт
 
 | Ответственность | Протокол | Метод | Эндпоинт/тип |
 |-----------------|----------|--------|---------------|
-| Чтение графа онтологии (навигация) | **GraphQL** | Query | `ontology`, `class`, `classes`, `classTree`, `classAncestors`, `classDescendants`, `graphNeighborhood`, `autocompleteClasses`, `property`, `properties`, `individual`, `individuals` |
+| Чтение графа онтологии (навигация) | **GraphQL** | Query | `class`, `classes`, `classTree`, `classAncestors`, `classDescendants`, `graphNeighborhood`, `autocompleteClasses`, `property`, `properties`, `individual`, `individuals` — 11 read-only резолверов. Пагинация: Relay Cursor Connections (`first`, `after`, `edges`, `pageInfo`, `totalCount`). Полиморфизм: интерфейс `Entity` (реализуют `Class`, `Individual`, `Property`). |
 | Чтение версии (commits, branches, tags) | **REST** | GET | `/api/v1/versioning/commits`, `/api/v1/versioning/branches`, `/api/v1/versioning/commits/{id}/delta` |
 | Запись онтологии (CRUD классов, свойств, индивидов) | **REST** | POST/PUT/DELETE | `/api/v1/ontologies/{id}/classes`, `/api/v1/ontologies/{id}/properties`, `/api/v1/ontologies/{id}/individuals` |
 | Запись онтологии (CRUD онтологий) | **REST** | POST/PUT/DELETE | `/api/v1/ontologies`, `/api/v1/ontologies/{id}` |
@@ -47,11 +47,11 @@ GraphQL-схему строить вокруг фиксированных инт
    - Прохождение через auth-мидлвэр API Gateway (OAuth2/JWT)
    - Аудит-лог (audit events) на write-операциях
    - Защиту от случайного обхода Circuit Breaker
-3. **Динамическая регистрация пользовательских типов в GraphQL-схеме** — пользовательские классы/свойства возвращаются через контейнеры (`propertyValues`, `outgoingEdges`, `incomingEdges`), а не как новые поля схемы.
+3. **Динамическая регистрация пользовательских типов в GraphQL-схеме** — пользовательские классы/свойства возвращаются через контейнеры `literalValues` и `referenceValues` на типе `Individual`, а навигация по графу — через `graphNeighborhood`. Новые поля схемы для пользовательских свойств не создаются.
 
 4. **Любые GraphQL mutations** — GraphQL-схема VEDO Core не содержит `Mutation` root. Все операции, изменяющие состояние (включая coordinate-draft, membership, draft-state, comments, validation), выполняются через REST. Узкие «временные» mutations (`updateDraft`, `updateMemberRole`, `removeMember`, существовавшие ранее) запрещены и подлежат/прошли миграции в REST (см. ADR-DES.API.rest-graphql-mutation-boundary.md).
 
-5. **Любые не-графовые Query-резолверы** — `groups`, `projects`, `members`, `commits`, `branches`, `tags`, `compareRevisions`, `ontology(id)` (метаданные) **запрещены** в GraphQL-схеме. Все чтения не-графовых данных выполняются через REST. Миграция выполнена в рамках tightening GraphQL to graph-only boundary per ADR-DES.API.rest-graphql-mutation-boundary.
+5. **Любые не-графовые Query-резолверы** — `groups`, `projects`, `members`, `commits`, `branches`, `tags`, `compareRevisions`, `ontology(id)` (метаданные) **запрещены** в GraphQL-схеме. Все чтения не-графовых данных, включая метаданные онтологии, выполняются через REST. Миграция выполнена в рамках tightening GraphQL to graph-only boundary per ADR-DES.API.rest-graphql-mutation-boundary.
 
 ## Рассмотренные альтернативы
 

@@ -91,7 +91,7 @@
 - Frontend API clients требуют миграции.
 
 **Меры снижения рисков:**
-- Guardrails (deprecation headers, planned stubs) применяются до миграции (Phase B).
+- Guardrails (deprecation headers, planned stubs) применяются до миграции (REST API GitLab Alignment Migration, M10/M11).
 - Endpoint-class таблица обеспечивает BOLA/BFLA-покрытие новых путей.
 - Поэтапная миграция сервисов с сохранением обратной совместимости через `x-vedo-status: planned`.
 

@@ -79,4 +79,4 @@ REST API использует GitLab-выровненную структуру �
 
 ## Обоснование (Rationale)
 
-Текущие пути `/api/v1/ontologies/{id}/*` — наследие до project separation. GitLab-модель диктует вложенные пути под `/projects/{pid}/`, а плоские ontology-пути противоречат модели 1:1 Project ↔ Ontology и запутывают API-поверхность. Выравнивание по GitLab делает API предсказуемым и консистентным с organization model. Миграция отложена до Phase B; в текущем плане применяются только guardrails (deprecation headers, planned stubs).
+Текущие пути `/api/v1/ontologies/{id}/*` — наследие до project separation. GitLab-модель диктует вложенные пути под `/projects/{pid}/`, а плоские ontology-пути противоречат модели 1:1 Project ↔ Ontology и запутывают API-поверхность. Выравнивание по GitLab делает API предсказуемым и консистентным с organization model. Миграция отложена до REST API GitLab Alignment Migration (M10 — versioning, M11 — CRUD/publishing); в текущем плане применяются только guardrails (deprecation headers, planned stubs).

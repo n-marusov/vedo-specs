@@ -125,6 +125,8 @@ description: Систематизированный перечень терми�
       - [Доказательство развёртывания (Deployment Evidence)](#доказательство-развёртывания-deployment-evidence)
       - [Демо-проект (Demo Project)](#демо-проект-demo-project)
       - [Форк онтологии (Ontology Fork)](#форк-онтологии-ontology-fork)
+      - [Snapshot (Release)](#snapshot-release)
+      - [Branch Snapshot](#branch-snapshot)
       - [Последовательность построения онтологии (Ontology Build Sequence)](#последовательность-построения-онтологии-ontology-build-sequence)
     - [Интеграция и API](#интеграция-и-api)
       - [REST API VEDO Core](#rest-api-vedo-core)
@@ -189,6 +191,9 @@ description: Систематизированный перечень терми�
       - [DDoS (Distributed Denial of Service)](#ddos-distributed-denial-of-service)
       - [WAF (Web Application Firewall)](#waf-web-application-firewall)
       - [Rate Limiting](#rate-limiting)
+      - [API Key](#api-key)
+      - [Capability Scope](#capability-scope)
+      - [Write-Path Invariant](#write-path-invariant)
       - [gitleaks](#gitleaks)
       - [Secret Scanning](#secret-scanning)
       - [Secret Rotation](#secret-rotation)
@@ -722,12 +727,12 @@ Project ≠ Ontology. Project — это среда (workspace) для совм�
 #### Publisher Service
 `publisherService`
 
-Микросервис публикации и экспорта онтологий. Отвечает за формирование snapshot-артефактов и подготовку данных для внешнего распространения/потребления в целевых форматах.
+Микросервис публикации и экспорта онтологий. Отвечает за формирование snapshot-артефактов (releases) и подготовку данных для внешнего распространения/потребления. Реализует CQRS-модель: снимок = материализованный read-only serving слой (отдельное read-only хранилище — второй Neo4j или MinIO+index, решение отложено). Поддерживает бинарную модель доступа: **public** (без аутентификации) / **restricted** (API key через заголовок `X-VEDO-API-Key`). Publish gate: роль Maintainer+ (вес ≥ 2), отдельной роли publisher нет. **Текущая реализация — in-memory stubs**.
 
 #### Public Browse API
 `publicBrowseApi`
 
-Публичный read-only API для просмотра опубликованных онтологий и связанных метаданных без доступа к операциям редактирования. Используется для сценариев внешнего поиска, навигации и чтения.
+Публичный read-only API для просмотра опубликованных онтологий (releases) и связанных метаданных без доступа к операциям редактирования. Используется для сценариев внешнего поиска, навигации и чтения. Поддерживает бинарную модель доступа: **public** (без auth, базовая защита от DoS) / **restricted** (API key через `X-VEDO-API-Key`). Rate limiting per-IP и per-API-key. Visibility снэпшота декоррелирована от visibility Project. **Текущая реализация — in-memory stubs**.
 
 #### Ticket Classifier
 `ticketClassifier`
@@ -831,6 +836,16 @@ Project ≠ Ontology. Project — это среда (workspace) для совм�
 
 Копия Project (с его парной Ontology) в пространство пользователя с созданием ссылки на исходный проект (upstream). Fork = базовый механизм для работы с демо-проектами и публичными онтологиями. При форке: создаётся новый Project с `upstream_project_id = <source_id>`, visibility = `private`, пользователь становится Owner. Fork реализуется через `POST /api/v1/projects/{id}/fork` (REST, требует `Idempotency-Key`). Связь с upstream позволяет в будущем (post-MVP) реализовать merge-upstream-changes (pull updates from source).
 
+#### Snapshot (Release)
+`snapshotRelease`
+
+Опубликованный read-only снимок онтологии на конкретном коммите. Материализуется в отдельном read-only serving слое (CQRS: чтения ≫ записи) и экспонируется как `/projects/{pid}/releases` (GitLab-нейминг; `snapshots` → `releases`). Отличается от живого editing workspace: snapshot виден внешним потребителям, а рабочая онтология — только внутренним участникам. Модель доступа бинарная: **public** (без auth) / **restricted** (API key). Visibility снэпшота декоррелирована от visibility Project.
+
+#### Branch Snapshot
+`branchSnapshot`
+
+Локальное REST-доступное представление состояния ветки онтологии на конкретном коммите. REST write-эндпоинты работают с branch snapshots, НЕ с живой онтологией; branch-local записи позднее коммитятся и мержатся. Является реализацией write-path invariant: прямой записи в живую онтологию не существует.
+
 #### Последовательность построения онтологии (Ontology Build Sequence)
 `ontologyBuildSequence`
 
@@ -842,6 +857,8 @@ Project ≠ Ontology. Project — это среда (workspace) для совм�
 `restApi`
 
 Набор HTTP-эндпоинтов для программного доступа к функциям VEDO Core. Позволяет выполнять CRUD-операции с онтологиями, управлять версиями и ветками, получать метрики. Используется отраслевыми решениями (VEDO Family, VEDO Agro) для интеграции.
+
+Каноническая структура — **project-scoped**: операции вложены под `/projects/{pid}/` (repository content с `?ref=`, merge_requests, releases, protected_branches) в соответствии с GitLab-выравниванием. Write-операции — **branch-scoped**: работают с branch snapshots, а не с живой онтологией. Пути `/api/v1/ontologies/*` — **deprecated** (заголовки `Deprecation`/`Sunset`; после окна миграции — `501` с `x-vedo-status: planned`). `ontology_id` — внутренний идентификатор, не экспонируется в REST-поверхности как канонический путь.
 
 #### Webhook онтологии
 `ontologyWebhook`
@@ -989,7 +1006,13 @@ Project ≠ Ontology. Project — это среда (workspace) для совм�
 #### RBAC (Role-Based Access Control)
 `rbac`
 
-Модель управления доступом на основе ролей. В VEDO Core роли `Viewer`, `Editor`, `Maintainer`, `Owner` определяют права пользователя в рамках GitLab-like модели Group/Ontology/Members. `Owner` управляет членством и ролями, `Maintainer` управляет workflow онтологии, включая review и merge, но не управляет членством.
+Модель управления доступом на основе ролей. В VEDO Core роли `Viewer`, `Editor`, `Maintainer`, `Owner` определяют права пользователя в рамках GitLab-like модели Group/Project/Members. `Owner` управляет членством и ролями, `Maintainer` управляет workflow онтологии, включая review и merge, но не управляет членством.
+
+**Publish gate:** публикацию (release) выполняет Maintainer+ (вес роли ≥ 2), отдельной роли publisher нет; Owner (вес = 3) также может публиковать.
+
+**Capability scopes для нечеловеческих акторов (AI-агенты, внешние системы):** отдельная модель от role ladder — `read`, `propose:abox`, `propose:tbox`, `mr:create`, `publish:restricted`; запрещены `write:direct`, `merge:self`, `publish:public` (требует человека).
+
+Роль `Editor` (Developer) работает в рамках branch-модели: изменения вносятся в ветку (branch snapshot) и применяются через MR — не напрямую в основную ветку.
 
 #### Keycloak
 `keycloak`
@@ -1046,10 +1069,14 @@ OIDC grant type, при котором клиент (в данном случа�
 
 Учётная запись в Keycloak, предназначенная для неинтерактивной аутентификации (CI/CD, автоматизация). Использует `client_credentials` grant для получения `access_token` без участия человека. Service account в `vedo-cli` не имеет MFA, но его scope ограничен предопределённым набором операций (категория D, read-only, backup create) — операции категорий A/B через service account запрещены на уровне Keycloak client scopes. Audit логирует `actor=service-account:<client_id>` для отличения автоматизированных операций от человеческих. Решение зафиксировано в `ADR-DES.SECURITY.cli-mfa-strategy`.
 
+**Внешние AI-агенты** (DMZ, не часть VEDO) также используют machine identity: к service account привязываются **capability scopes** (`read`, `propose:abox`, `propose:tbox`, `mr:create`, `publish:restricted`), а записи ограничены собственным namespace `branches/{client}/*`. Никогда — `write:direct`, `merge:self`, `publish:public`.
+
 #### M2M-токен (Machine-to-Machine token)
 `m2mToken`
 
 Токен доступа, получаемый service account'ом через `client_credentials` grant в Keycloak. Используется для автоматизированного взаимодействия между системами без участия человека. В `vedo-cli` передаётся через флаг `--token` и позволяет выполнять команды в CI/CD-пайплайнах без интерактивного ввода. Scope токена ограничен настройками клиента в Keycloak.
+
+Для внешних AI-агентов scope токена выражается через **capability scopes** (см. `capabilityScope`): read, propose:abox, propose:tbox, mr:create, publish:restricted. Запрещены write:direct, merge:self, publish:public.
 
 #### AuthSessionManager
 `authSessionManager`
@@ -1135,6 +1162,21 @@ Open Web Application Security Project Application Security Verification Standard
 `rateLimiting`
 
 Ограничение частоты запросов от клиента (по IP, tenant, endpoint) для защиты от перегрузки и DDoS-атак. В VEDO Core реализовано на API Gateway с порогами: неавторизованные — 100 req/min, авторизованные — 1000 req/min, per tenant — 5000 req/min, SPARQL endpoint — 30 req/min per IP. При превышении возвращается HTTP 429.
+
+#### API Key
+`apiKey`
+
+Учётные данные машинной аутентификации для restricted-доступа к опубликованным снэпшотам (releases). Передаётся в заголовке `X-VEDO-API-Key`; привязан к конкретному release. Генерация/отзыв через `/projects/{pid}/api_keys` (post-MVP) или project settings. Rate limiting per-API-key.
+
+#### Capability Scope
+`capabilityScope`
+
+Модель разрешений для нечеловеческих акторов (AI-агенты, внешние системы) — НЕ role ladder. Определяет, что внешняя идентичность МОЖЕТ делать: `read`, `propose:abox`, `propose:tbox`, `mr:create`, `publish:restricted`. Никогда не включает `write:direct`, `merge:self`, `publish:public` (требует человека). AI пишет только в собственные ветки `branches/{client}/*`; proposer ≠ approver ≠ publisher; review gate = детерминированный код, не «AI ревьюит AI».
+
+#### Write-Path Invariant
+`writePathInvariant`
+
+Архитектурное ограничение: НЕ существует пути мутации состояния онтологии вне конвейера версионирования. Каждая мутация = branch → commit → MR → review → merge. Применяется ко всем: люди, AI-агенты, администраторы. Каждая мутация — залогированный коммит с аудиторским следом (кто, что, когда, ветка). REST write-эндпоинты работают с branch snapshots. Текущий код, нарушающий инвариант, помечен для миграции в M10.
 
 #### gitleaks
 `gitleaks`

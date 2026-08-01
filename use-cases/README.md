@@ -119,6 +119,7 @@ UC-<L1>.<L2>.<L3>
 | 46 | `UC-support.community.participate-in-community-forum` |
 | 47 | `UC-support.status.view-public-status-page` |
 | 48 | `UC-support.feedback.review-feedback-analytics` |
+| 49 | `UC-platform.landing.first-visit-and-signup` |
 
 ---
 

@@ -98,6 +98,7 @@ ADR-<LEVEL>.<AREA>.<semantic-tag>
 | `ADR-DES.UI.data-loss-prevention-strategy` | Защита от потери данных | Принято | 2026-05-10 |
 | `ADR-DES.UI.dangerous-actions-recovery-strategy` | Восстановление опасных действий | Принято | 2026-05-10 |
 | `ADR-DES.UI.version-context-visibility-strategy` | Видимость контекста версии | Принято | 2026-05-10 |
+| `ADR-DES.UI.public-landing-architecture` | Архитектура публичного лендинга | Предложено | 2026-08-01 |
 | `ADR-DES.UI.import-export-safety-strategy` | Безопасность импорта/экспорта | Принято | 2026-05-10 |
 | `ADR-DES.UI.error-feedback-strategy` | Обратная связь об ошибках | Принято | 2026-05-10 |
 | `ADR-DES.UI.navigation-state-strategy` | Состояние навигации | Принято | 2026-05-10 |

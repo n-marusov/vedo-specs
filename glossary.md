@@ -108,7 +108,7 @@ description: Систематизированный перечень терми�
       - [Frontend](#frontend)
       - [Publish Browse UI](#publish-browse-ui)
       - [Document Extractor](#document-extractor)
-      - [vedo-cli](#vedo-cli-1)
+      - [vedo-cli](#vedo-cli)
     - [Функции и возможности](#функции-и-возможности)
       - [Каноническая сериализация (Canonical Serialization)](#каноническая-сериализация-canonical-serialization)
       - [Коммит онтологии (Ontology Commit)](#коммит-онтологии-ontology-commit)
@@ -123,7 +123,8 @@ description: Систематизированный перечень терми�
       - [Долгосрочная поддержка (LTS, Long Term Support)](#долгосрочная-поддержка-lts-long-term-support)
       - [Аварийный выключатель (Kill Switch)](#аварийный-выключатель-kill-switch)
       - [Доказательство развёртывания (Deployment Evidence)](#доказательство-развёртывания-deployment-evidence)
-      - [Шаблон онтологии (Ontology Template)](#шаблон-онтологии-ontology-template)
+      - [Демо-проект (Demo Project)](#демо-проект-demo-project)
+      - [Форк онтологии (Ontology Fork)](#форк-онтологии-ontology-fork)
       - [Последовательность построения онтологии (Ontology Build Sequence)](#последовательность-построения-онтологии-ontology-build-sequence)
     - [Интеграция и API](#интеграция-и-api)
       - [REST API VEDO Core](#rest-api-vedo-core)
@@ -145,21 +146,18 @@ description: Систематизированный перечень терми�
       - [Дерево классов (Class Tree)](#дерево-классов-class-tree)
       - [Панель свойств (Property Panel)](#панель-свойств-property-panel)
       - [Режим сравнения версий (Diff Mode)](#режим-сравнения-версий-diff-mode)
+      - [CTA (Call-to-Action)](#cta-call-to-action)
     - [Инфраструктура и DevOps](#инфраструктура-и-devops)
       - [Канонический Turtle](#канонический-turtle)
       - [LOP (Large Object Promisor)](#lop-large-object-promisor)
       - [Helm Chart](#helm-chart)
       - [MinIO](#minio)
+    - [Тип свойства (PropertyType)](#тип-свойства-propertytype)
+    - [Аннотационное свойство (Annotation Property)](#аннотационное-свойство-annotation-property)
       - [WORM (Write Once Read Many)](#worm-write-once-read-many)
       - [Support DB](#support-db)
       - [Support Metadata](#support-metadata)
       - [Cobra](#cobra)
-      - [SLSA (Supply chain Levels for Software Artifacts)](#slsa-supply-chain-levels-for-software-artifacts)
-      - [Sigstore](#sigstore)
-      - [cosign](#cosign)
-      - [Provenance (Provenance)](#provenance-provenance)
-      - [Verifiable Builds / Reproducible Builds](#verifiable-builds--reproducible-builds)
-      - [Pre-commit Hook](#pre-commit-hook)
     - [Безопасность и управление доступом](#безопасность-и-управление-доступом)
       - [RBAC (Role-Based Access Control)](#rbac-role-based-access-control)
       - [Keycloak](#keycloak)
@@ -183,17 +181,17 @@ description: Систематизированный перечень терми�
       - [SAST (Static Application Security Testing)](#sast-static-application-security-testing)
       - [DAST (Dynamic Application Security Testing)](#dast-dynamic-application-security-testing)
       - [OWASP ASVS](#owasp-asvs)
+      - [SCA (Software Composition Analysis)](#sca-software-composition-analysis)
+      - [SBOM (Software Bill of Materials)](#sbom-software-bill-of-materials)
+      - [CVE (Common Vulnerabilities and Exposures)](#cve-common-vulnerabilities-and-exposures)
+      - [Advisory Database](#advisory-database)
+      - [Compliance Evidence](#compliance-evidence)
       - [DDoS (Distributed Denial of Service)](#ddos-distributed-denial-of-service)
       - [WAF (Web Application Firewall)](#waf-web-application-firewall)
       - [Rate Limiting](#rate-limiting)
       - [gitleaks](#gitleaks)
       - [Secret Scanning](#secret-scanning)
       - [Secret Rotation](#secret-rotation)
-      - [SCA (Software Composition Analysis)](#sca-software-composition-analysis)
-      - [SBOM (Software Bill of Materials)](#sbom-software-bill-of-materials)
-      - [CVE (Common Vulnerabilities and Exposures)](#cve-common-vulnerabilities-and-exposures)
-      - [Advisory Database](#advisory-database)
-      - [Compliance Evidence](#compliance-evidence)
   - [8. SLA, метрики и восстановление](#8-sla-метрики-и-восстановление)
     - [RTO (Recovery Time Objective)](#rto-recovery-time-objective)
     - [RPO (Recovery Point Objective)](#rpo-recovery-point-objective)
@@ -925,6 +923,11 @@ Project ≠ Ontology. Project — это среда (workspace) для совм�
 `diffMode`
 
 Режим просмотра двух версий онтологии (коммитов) с визуальной подсветкой добавленных, изменённых и удалённых элементов. Представление доступно как в виде списка, так и в виде наложения графов.
+
+#### CTA (Call-to-Action)
+`cta`
+
+Элемент пользовательского интерфейса (кнопка, ссылка), побуждающий посетителя к целевому действию: регистрации, знакомству с демо-проектами, началу работы с платформой. На общедоступной посадочной странице VEDO Hub используется два элемента призыва к действию: **основной** («Создать аккаунт бесплатно» — зрительно выделяющаяся кнопка, ведущая к входу через Keycloak) и **дополнительный** («Смотреть демо» — контурная кнопка, прокручивающая страницу к витрине VEDO Demos). Путь от посадочной страницы до регистрации — не более трёх нажатий, включая основной призыв.
 
 ### Инфраструктура и DevOps
 
